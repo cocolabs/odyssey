@@ -21,8 +21,10 @@ public class OdysseyConfig {
 		CLIENT = specPair.getLeft();
 	}
 
-	public static void bakeConfig() {
+	private static long timeCycleSpeed;
 
+	public static void bakeConfig() {
+		timeCycleSpeed = ClientConfig.timeCycleSpeed.get();
 	}
 
 	@SubscribeEvent
@@ -31,5 +33,9 @@ public class OdysseyConfig {
 		if (configEvent.getConfig().getSpec() == CLIENT_SPEC) {
 			bakeConfig();
 		}
+	}
+
+	public static long getTimeCycleSpeed() {
+		return timeCycleSpeed;
 	}
 }
