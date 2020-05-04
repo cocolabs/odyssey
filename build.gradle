@@ -138,3 +138,48 @@ processResources {
         exclude 'META-INF/mods.toml'
     }
 }
+
+// Enable composite build by renaming .composite file
+task enableCompositeBuild {
+    group = 'tools'
+    description = 'Enable composite build'
+    doLast {
+        File file_enabled = new File(".composite")
+        if (!file_enabled.exists())
+        {
+            File file_disabled = new File('.composite-disable')
+            if (file_disabled.exists())
+            {
+                if (file_disabled.renameTo('.composite')) {
+                    logger.quiet("Composite build enabled")
+                }
+                else {
+                    logger.quiet("ERROR: Unable to rename .composite-disable file")
+                }
+            }
+            else if (file_enabled.createNewFile()) {
+                logger.quiet("Composite build enabled, remember to write path to the build" +
+                        " you want included inside the created '.composite' file")
+            }
+            else logger.quiet("ERROR: Unable to create .composite file")
+        }
+        else {
+            logger.quiet("Composite builds are already enabled")
+        }
+    }
+}
+
+// Disable composite build by renaming .composite file
+task disableCompositeBuild {
+    group = 'tools'
+    description = 'Disable composite build'
+    doLast {
+        File file = new File(".composite")
+        if (file.renameTo('.composite-disable')) {
+            logger.quiet("Composite build successfully disabled")
+        }
+        else {
+            logger.quiet("ERROR: Unable to rename .composite file")
+        }
+    }
+}

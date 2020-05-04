@@ -1,0 +1,8 @@
+rootProject.name = "odyssey"
+
+// Special .composite file enables composite builds and contains path data
+// run 'enableCompositeBuild' to create and 'disableCompositeBuild' to remove it
+File file = new File('.composite')
+if (file.exists()) {
+    includeBuild (file.readLines().get(0))
+}
