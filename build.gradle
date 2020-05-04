@@ -1,17 +1,22 @@
 buildscript {
     repositories {
         maven { url = 'https://files.minecraftforge.net/maven' }
+        maven { url = 'https://repo.spongepowered.org/maven' }
         jcenter()
         mavenCentral()
     }
     dependencies {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
+
+        // https://github.com/SpongePowered/MixinGradle
+        classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
     }
 }
 apply plugin: 'net.minecraftforge.gradle'
-// Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
+apply plugin: 'org.spongepowered.mixin'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
+apply plugin: 'java-library'
 
 version = "${minecraftVersion}-${modVersion}"
 group = "io.${groupName}.${modId}"
@@ -20,6 +25,15 @@ archivesBaseName = project.modId
 // Need this here so eclipse task generates correctly.
 compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility
+
+repositories {
+    mavenLocal()
+    maven { url 'https://repo.spongepowered.org/maven' }
+}
+
+mixin {
+    add sourceSets.main, "mixins.${modId}.refmap.json"
+}
 
 minecraft {
     // The mappings can be changed at any time, and must be in the following format.
@@ -35,6 +49,7 @@ minecraft {
     runs {
         client {
             workingDirectory project.file('run')
+            arg "-mixin.config=" + archivesBaseName + ".mixins.json"
 
             // Recommended logging data for a userdev environment
             property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
@@ -51,6 +66,7 @@ minecraft {
 
         server {
             workingDirectory project.file('run')
+            arg "-mixin.config=" + archivesBaseName + ".mixins.json"
 
             // Recommended logging data for a userdev environment
             property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
@@ -75,6 +91,14 @@ dependencies {
 
     // https://mvnrepository.com/artifact/org.jetbrains/annotations
     compile group: 'org.jetbrains', name: 'annotations', version: '19.0.0'
+
+    // https://github.com/SpongePowered/Mixin
+    compile "org.spongepowered:mixin:0.8.1-SNAPSHOT"
+
+    // When developing with TimeLib in composite build
+    if (file('.composite').exists()) {
+        api "io.yooksi:timelib:${timeLibVersion}-api"
+    }
 }
 
 // Get properties into the manifest for reading by the runtime..
@@ -136,5 +160,50 @@ processResources {
     // Copy everything else except the mods.toml
     from(sourceSets.main.resources.srcDirs) {
         exclude 'META-INF/mods.toml'
+    }
+}
+
+// Enable composite build by renaming .composite file
+task enableCompositeBuild {
+    group = 'tools'
+    description = 'Enable composite build'
+    doLast {
+        File file_enabled = new File(".composite")
+        if (!file_enabled.exists())
+        {
+            File file_disabled = new File('.composite-disable')
+            if (file_disabled.exists())
+            {
+                if (file_disabled.renameTo('.composite')) {
+                    logger.quiet("Composite build enabled")
+                }
+                else {
+                    logger.quiet("ERROR: Unable to rename .composite-disable file")
+                }
+            }
+            else if (file_enabled.createNewFile()) {
+                logger.quiet("Composite build enabled, remember to write path to the build" +
+                        " you want included inside the created '.composite' file")
+            }
+            else logger.quiet("ERROR: Unable to create .composite file")
+        }
+        else {
+            logger.quiet("Composite builds are already enabled")
+        }
+    }
+}
+
+// Disable composite build by renaming .composite file
+task disableCompositeBuild {
+    group = 'tools'
+    description = 'Disable composite build'
+    doLast {
+        File file = new File(".composite")
+        if (file.renameTo('.composite-disable')) {
+            logger.quiet("Composite build successfully disabled")
+        }
+        else {
+            logger.quiet("ERROR: Unable to rename .composite file")
+        }
     }
 }
