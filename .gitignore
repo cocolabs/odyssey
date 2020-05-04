@@ -20,6 +20,10 @@ build
 eclipse
 run
 
+# logs
+logs
+*.log
+
 # windows
 Thumbs.db
 
