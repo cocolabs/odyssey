@@ -82,8 +82,9 @@ dependencies {
     // https://mvnrepository.com/artifact/org.jetbrains/annotations
     compile group: 'org.jetbrains', name: 'annotations', version: '19.0.0'
 
+    // When developing with TimeLib in composite build
     if (file('.composite').exists()) {
-        api "io.yooksi:timelib-api:${timeLibVersion}"
+        api "io.yooksi:timelib:${timeLibVersion}-api"
     }
 }
 
