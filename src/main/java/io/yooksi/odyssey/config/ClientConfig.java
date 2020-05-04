@@ -1,7 +1,7 @@
 package io.yooksi.odyssey.config;
 
 import io.yooksi.odyssey.common.Defines;
-import io.yooksi.timelib.TimeCycle;
+import io.yooksi.odyssey.core.TimeCycle;
 import net.minecraftforge.common.ForgeConfigSpec;
 
 public class ClientConfig {
