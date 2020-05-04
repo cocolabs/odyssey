@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "package": "io.yooksi.odyssey.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "refmap": "mixins.odyssey.refmap.json",
+  "mixins": [
+    "World_advanceTimeMixin",
+  ],
+  "client": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "minVersion": "0.8"
+}
