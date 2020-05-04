@@ -1,6 +1,7 @@
 package io.yooksi.odyssey;
 
 import io.yooksi.odyssey.common.Defines;
+import io.yooksi.odyssey.config.OdysseyConfig;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
@@ -24,6 +25,8 @@ public class Odyssey {
         // Register the setup method for modloading
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
 
+        // Register Mod configuration
+        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, OdysseyConfig.CLIENT_SPEC);
 
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
