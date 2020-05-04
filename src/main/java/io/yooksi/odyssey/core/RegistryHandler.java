@@ -2,7 +2,7 @@ package io.yooksi.odyssey.core;
 
 import io.yooksi.odyssey.block.ModBlocks;
 import io.yooksi.odyssey.common.Defines;
-import io.yooksi.odyssey.TMLogger;
+import io.yooksi.odyssey.ODLogger;
 import io.yooksi.odyssey.item.ModItemGroup;
 import io.yooksi.odyssey.item.ModItems;
 import io.yooksi.odyssey.util.RLHelper;
@@ -41,7 +41,7 @@ public class RegistryHandler {
 					blockItemCount.getAndIncrement();
 				});
 
-		TMLogger.debug("Registered %d BlockItems", blockItemCount.get());
+		ODLogger.debug("Registered %d BlockItems", blockItemCount.get());
 	}
 
 	public static void registerDeferred(IEventBus iEventBus) {

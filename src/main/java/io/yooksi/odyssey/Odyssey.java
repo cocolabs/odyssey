@@ -21,12 +21,12 @@ import org.apache.logging.log4j.Logger;
 import java.util.stream.Collectors;
 
 @Mod(Defines.MODID)
-public class TemplateMod {
+public class Odyssey {
 
     // Directly reference a log4j logger.
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public TemplateMod() {
+    public Odyssey() {
 
         // Initialize mod logger
         TMLogger.init(LogManager.getLogger());
