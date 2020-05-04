@@ -2,6 +2,7 @@ package io.yooksi.odyssey;
 
 import io.yooksi.odyssey.common.Defines;
 import io.yooksi.odyssey.config.OdysseyConfig;
+import io.yooksi.odyssey.core.TimeCycle;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
@@ -36,5 +37,7 @@ public class Odyssey {
 
         LOGGER.info("Pre-initialization phase");
 
+        // Modify the day/night cycle with config value
+        TimeCycle.setSpeed(OdysseyConfig.getTimeCycleSpeed());
     }
 }
