@@ -31,6 +31,10 @@ repositories {
     maven { url 'https://repo.spongepowered.org/maven' }
 }
 
+mixin {
+    add sourceSets.main, "mixins.${modId}.refmap.json"
+}
+
 minecraft {
     // The mappings can be changed at any time, and must be in the following format.
     // snapshot_YYYYMMDD   Snapshot are built nightly.
