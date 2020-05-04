@@ -22,6 +22,11 @@ archivesBaseName = project.modId
 compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility
 
+repositories {
+    mavenLocal()
+    maven { url 'https://repo.spongepowered.org/maven' }
+}
+
 minecraft {
     // The mappings can be changed at any time, and must be in the following format.
     // snapshot_YYYYMMDD   Snapshot are built nightly.
