@@ -1,8 +1,8 @@
 package io.yooksi.odyssey.client;
 
+import io.yooksi.odyssey.client.renderer.entity.CamelRenderer;
 import io.yooksi.odyssey.common.Defines;
 import io.yooksi.odyssey.entity.ModEntityTypes;
-import net.minecraft.client.renderer.entity.LlamaRenderer;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
@@ -25,7 +25,7 @@ public class ClientRegistryHandler {
   @SubscribeEvent
   public static void on(FMLClientSetupEvent event) {
 
-    RenderingRegistry.registerEntityRenderingHandler(ModEntityTypes.CAMEL.get(), LlamaRenderer::new);
+    RenderingRegistry.registerEntityRenderingHandler(ModEntityTypes.CAMEL.get(), CamelRenderer::new);
   }
 
 }
