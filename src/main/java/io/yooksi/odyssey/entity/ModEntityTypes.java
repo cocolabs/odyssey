@@ -17,6 +17,30 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 import java.awt.*;
 
+/**
+ * This class is responsible for registering both {@link EntityType}s and {@link SpawnEggItem}s.
+ * <p>
+ * It uses the item registration event to create the entity types as well as
+ * register the spawn eggs. The types are created in the item registration event
+ * because items are registered before entity types and the entity type is
+ * needed to register the spawn egg item. If the entity types are created in the
+ * deferred registration's supplier, it will cause a NPE when the spawn egg is
+ * used.
+ * <p>
+ * Reference: https://www.minecraftforge.net/forum/topic/75045-solved1144-entities-and-spawneggs/
+ * <p>
+ * -----------------------------------------------------------------------------
+ * <p>
+ * The following is incorrect and there is no way to suppress the log warnings
+ * about missing data-fixers for entities:
+ * <p>
+ * The String parameter of the builder’s build method is a data-fixer id.
+ * Data fixers do not work with mods (yet) so you should pass null in.
+ * <p>
+ * Passing null will suppress the log warning of no data fixers registered.
+ * <p>
+ * Source: https://mcforge.readthedocs.io/en/1.15.x/concepts/registries/
+ */
 @Mod.EventBusSubscriber(modid = Defines.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public final class ModEntityTypes {
 
@@ -28,29 +52,6 @@ public final class ModEntityTypes {
 
   @SubscribeEvent
   public static void onRegisterItems(final RegistryEvent.Register<Item> event) {
-
-    /*
-     * The event to register items is fired before the event to register entity
-     * types, therefore, if we register an entity spawn egg before the entity
-     * type is created, we will experience a NPE when the egg is used in game.
-     *
-     * We can circumvent the error if we create the entity type here, during
-     * the item registration event.
-     *
-     * Reference: https://www.minecraftforge.net/forum/topic/75045-solved1144-entities-and-spawneggs/
-     *
-     * ---
-     *
-     * The following is complete misinformation and there is no way to suppress
-     * the log warnings about data-fixers for entities.
-     *
-     * The String parameter of the builder’s build method is a data-fixer id.
-     * Data fixers do not work with mods (yet) so you should pass null in.
-     *
-     * Passing null will suppress the log warning of no data fixers registered.
-     *
-     * Source: https://mcforge.readthedocs.io/en/1.15.x/concepts/registries/
-     */
 
     CAMEL_ENTITY_TYPE = EntityType.Builder.create(CamelEntity::new, EntityClassification.CREATURE)
         .size(EntityType.LLAMA.getWidth(), EntityType.LLAMA.getHeight())
