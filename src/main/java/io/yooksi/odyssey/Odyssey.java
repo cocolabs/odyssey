@@ -2,6 +2,7 @@ package io.yooksi.odyssey;
 
 import io.yooksi.odyssey.common.Defines;
 import io.yooksi.odyssey.config.OdysseyConfig;
+import io.yooksi.odyssey.core.RegistryHandler;
 import io.yooksi.odyssey.core.TimeCycle;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -31,6 +32,10 @@ public class Odyssey {
 
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
+
+        // Register deferred registries; this does not cause any registration,
+        // it simply tells the deferred registries to use the given event bus.
+        RegistryHandler.registerDeferred(FMLJavaModLoadingContext.get().getModEventBus());
     }
 
     private void setup(final FMLCommonSetupEvent event) {
