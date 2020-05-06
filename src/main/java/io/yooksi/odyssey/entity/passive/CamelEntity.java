@@ -1,6 +1,7 @@
 package io.yooksi.odyssey.entity.passive;
 
 import io.yooksi.odyssey.entity.ModEntityTypes;
+import io.yooksi.odyssey.entity.ai.goal.EatGrassDrinkWaterGoal;
 import net.minecraft.entity.AgeableEntity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.goal.*;
@@ -14,6 +15,8 @@ import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.Hand;
 import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 
 import javax.annotation.Nonnull;
@@ -53,6 +56,9 @@ public class CamelEntity
 
   private static final int WHEAT_COUNT_REQUIRED_TO_TAME = 4;
 
+  private int eatDrinkTimer;
+  private EatGrassDrinkWaterGoal eatDrinkGoal;
+
   public CamelEntity(EntityType<? extends LlamaEntity> entityType, World world) {
 
     super(entityType, world);
@@ -77,6 +83,12 @@ public class CamelEntity
   private int getWheatCount() {
 
     return this.dataManager.get(DATA_WHEAT_COUNT);
+  }
+
+  public int getEatDrinkTimer() {
+
+    // TODO: this will tie into the eat / drink animation
+    return this.eatDrinkTimer;
   }
 
   // ---------------------------------------------------------------------------
@@ -106,6 +118,41 @@ public class CamelEntity
 
     } catch (Throwable t) {
       throw new RuntimeException(String.format("Error accessing unreflected field: %s", "field_220892_d"), t);
+    }
+
+    this.eatDrinkGoal = new EatGrassDrinkWaterGoal(this, 0.7);
+    this.goalSelector.addGoal(5, this.eatDrinkGoal);
+  }
+
+  // ---------------------------------------------------------------------------
+  // - Update
+  // ---------------------------------------------------------------------------
+
+  @Override
+  public void livingTick() {
+
+    if (this.world.isRemote) {
+      this.eatDrinkTimer = Math.max(0, this.eatDrinkTimer - 1);
+    }
+
+    super.livingTick();
+  }
+
+  @Override
+  protected void updateAITasks() {
+
+    this.eatDrinkTimer = this.eatDrinkGoal.getActionTimer();
+    super.updateAITasks();
+  }
+
+  @OnlyIn(Dist.CLIENT)
+  public void handleStatusUpdate(byte id) {
+
+    if (id == 10) {
+      this.eatDrinkTimer = EatGrassDrinkWaterGoal.EAT_DRINK_TIMER_START_VALUE;
+
+    } else {
+      super.handleStatusUpdate(id);
     }
   }
 
