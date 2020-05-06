@@ -55,10 +55,15 @@ public class EatGrassDrinkWaterGoal
     // Try to locate a grass, grass block, or water for the entity to path to.
     //
     // Loop until a valid position is found or the max tries are exceeded:
-    // 1. Select a pathable position that is a grass, or above a grass block or water source
-    // 2. Locate a pathable position one block adjacent to the selected position that also has a solid block below it
-    // 3. Store the position of the block to path to
-    // 4. Store the position of the block to eat
+    //
+    // If the block can be eaten or the block below can be eaten:
+    //   1. Select a pathable position that is a grass, or above a grass block or water source
+    //   2. Locate a pathable position one block adjacent to the selected position that also has a solid block below it
+    //   3. Store the position of the block to path to
+    //   4. Store the position of the block to eat
+    // Else if the block is adjacent to water:
+    //   5. Store the position of the block to path to
+    //   6. Store the position of the block to drink
 
     for (int i = 0; i < BLOCK_SEARCH_COUNT; i++) {
 
@@ -70,7 +75,7 @@ public class EatGrassDrinkWaterGoal
 
       BlockPos blockPos = new BlockPos(posVec);
 
-      if (this.isBlockPosValid(blockPos)) { // 1
+      if (this.isBlockPosValidToEat(blockPos)) { // 1
         BlockPos adjacentPos = this.getAdjacentPos(blockPos); // 2
 
         if (adjacentPos == null) {
@@ -84,10 +89,41 @@ public class EatGrassDrinkWaterGoal
         this.targetBlockPos = blockPos; // 4
 
         return true;
+
+      } else {
+
+        BlockPos blockPosToDrink = this.getBlockPosToDrink(blockPos);
+
+        if (blockPosToDrink == null) {
+          continue;
+        }
+
+        this.x = blockPos.getX(); // 5
+        this.y = blockPos.getY();
+        this.z = blockPos.getZ();
+
+        this.targetBlockPos = blockPosToDrink; // 6
+
+        return true;
       }
     }
 
     return false;
+  }
+
+  @Nullable
+  private BlockPos getBlockPosToDrink(BlockPos blockPos) {
+
+    for (int i = 0; i < 4; i++) {
+      Direction direction = Direction.byHorizontalIndex(i);
+      BlockPos offset = blockPos.offset(direction).down();
+
+      if (this.world.getFluidState(offset).isTagged(FluidTags.WATER)) {
+        return offset.up();
+      }
+    }
+
+    return null;
   }
 
   @Nullable
@@ -105,7 +141,7 @@ public class EatGrassDrinkWaterGoal
     return null;
   }
 
-  private boolean isBlockPosValid(BlockPos blockPos) {
+  private boolean isBlockPosValidToEat(BlockPos blockPos) {
 
     BlockState blockState = this.world.getBlockState(blockPos);
 
@@ -115,11 +151,7 @@ public class EatGrassDrinkWaterGoal
     } else {
       BlockPos blockPosDown = blockPos.down();
       BlockState blockStateDown = this.world.getBlockState(blockPosDown);
-      IFluidState fluidState = this.world.getFluidState(blockPosDown);
-      if (blockStateDown.getBlock() != Blocks.SANDSTONE) {
-        System.out.println(blockStateDown);
-      }
-      return fluidState.isTagged(FluidTags.WATER) || IS_GRASS_BLOCK.test(blockStateDown);
+      return IS_GRASS_BLOCK.test(blockStateDown);
     }
   }
 
