@@ -225,8 +225,8 @@ public class CamelModel
   @Override
   public void setRotationAngles(@Nonnull CamelEntity camelEntity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
 
-    this.head.rotateAngleX = headPitch * ((float)Math.PI / 180F);
-    this.head.rotateAngleY = netHeadYaw * ((float)Math.PI / 180F);
+    this.head.rotateAngleX = headPitch * ((float) Math.PI / 180F);
+    this.neck_top.rotateAngleY = netHeadYaw * ((float) Math.PI / 180F);
   }
 
   @Override
