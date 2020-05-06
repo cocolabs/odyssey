@@ -31,7 +31,7 @@ import java.awt.*;
  * <p>
  * -----------------------------------------------------------------------------
  * <p>
- * The following is incorrect and there is no way to suppress the log warnings
+ * The following is incorrect and I couldn't find a way to suppress the log warnings
  * about missing data-fixers for entities:
  * <p>
  * The String parameter of the builder’s build method is a data-fixer id.
