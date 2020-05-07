@@ -2,21 +2,25 @@ package io.yooksi.odyssey.entity.passive;
 
 import io.yooksi.odyssey.entity.ModEntityTypes;
 import io.yooksi.odyssey.entity.ai.goal.CamelFollowOwnerGoal;
+import io.yooksi.odyssey.entity.ai.goal.CamelSitGoal;
 import io.yooksi.odyssey.entity.ai.goal.CamelWanderGoal;
 import io.yooksi.odyssey.entity.ai.goal.EatGrassDrinkWaterGoal;
 import net.minecraft.entity.AgeableEntity;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.passive.horse.LlamaEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.AbstractArrowEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.Hand;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
@@ -64,6 +68,7 @@ public class CamelEntity
 
   private int eatDrinkTimer;
   private EatGrassDrinkWaterGoal eatDrinkGoal;
+  private CamelSitGoal sitGoal;
 
   public CamelEntity(EntityType<? extends LlamaEntity> entityType, World world) {
 
@@ -108,6 +113,11 @@ public class CamelEntity
     }
   }
 
+  public boolean isOwner(LivingEntity entityIn) {
+
+    return (entityIn == this.getOwner());
+  }
+
   public boolean isSitting() {
 
     return this.dataManager.get(DATA_SITTING);
@@ -116,6 +126,7 @@ public class CamelEntity
   public void setSitting(boolean sitting) {
 
     this.dataManager.set(DATA_SITTING, sitting);
+    this.sitGoal.setSitting(sitting);
   }
 
   // ---------------------------------------------------------------------------
@@ -148,6 +159,8 @@ public class CamelEntity
       throw new RuntimeException(String.format("Error accessing unreflected field: %s", "field_220892_d"), t);
     }
 
+    this.sitGoal = new CamelSitGoal(this);
+    this.goalSelector.addGoal(2, this.sitGoal);
     this.eatDrinkGoal = new EatGrassDrinkWaterGoal(this, 0.7);
     this.goalSelector.addGoal(5, this.eatDrinkGoal);
     this.goalSelector.addGoal(6, new CamelWanderGoal(this, 0.7));
@@ -216,9 +229,9 @@ public class CamelEntity
   public boolean processInteract(PlayerEntity player, @Nonnull Hand hand) {
 
     ItemStack itemstack = player.getHeldItem(hand);
+    boolean isAdult = (this.getGrowingAge() == 0);
 
     if (this.isBreedingItem(itemstack)) {
-      boolean isAdult = (this.getGrowingAge() == 0);
 
       // If the camel is an adult and not tame, consume a wheat and increase
       // the camel's wheat counter. If four pieces of wheat are consumed,
@@ -258,9 +271,40 @@ public class CamelEntity
         this.ageUp((int) ((float) (-this.getGrowingAge() / 20) * 0.1f), true);
         return true;
       }
+
+    } else if (isAdult && this.isOwner(player) && this.isTame() && hand == Hand.MAIN_HAND) {
+
+      // If an adult camel's owner clicks on it with a non-wheat item,
+      // toggle the sitting status.
+
+      this.setSitting(!this.isSitting());
+      this.isJumping = false;
+      this.navigator.clearPath();
+      this.setAttackTarget(null);
     }
 
     return false;
+  }
+
+  @Override
+  public boolean attackEntityFrom(DamageSource source, float amount) {
+
+    if (this.isInvulnerableTo(source)) {
+      return false;
+
+    } else {
+      Entity entity = source.getTrueSource();
+
+      if (this.sitGoal != null) {
+        this.sitGoal.setSitting(false);
+      }
+
+      if (entity != null && !(entity instanceof PlayerEntity) && !(entity instanceof AbstractArrowEntity)) {
+        amount = (amount + 1.0F) / 2.0F;
+      }
+
+      return super.attackEntityFrom(source, amount);
+    }
   }
 
   // ---------------------------------------------------------------------------
