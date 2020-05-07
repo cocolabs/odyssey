@@ -68,11 +68,13 @@ public class CamelEntity
 
   private int eatDrinkTimer;
   private EatGrassDrinkWaterGoal eatDrinkGoal;
+  private int sitTimer;
   private CamelSitGoal sitGoal;
 
   public CamelEntity(EntityType<? extends LlamaEntity> entityType, World world) {
 
     super(entityType, world);
+    this.sitTimer = 20;
   }
 
   // ---------------------------------------------------------------------------
@@ -127,6 +129,15 @@ public class CamelEntity
 
     this.dataManager.set(DATA_SITTING, sitting);
     this.sitGoal.setSitting(sitting);
+
+    if (sitting) {
+      this.world.setEntityState(this, (byte) 127);
+    }
+  }
+
+  public int getSitTimer() {
+
+    return this.sitTimer;
   }
 
   // ---------------------------------------------------------------------------
@@ -176,6 +187,13 @@ public class CamelEntity
 
     if (this.world.isRemote) {
       this.eatDrinkTimer = Math.max(0, this.eatDrinkTimer - 1);
+
+      if (this.isSitting()) {
+        this.sitTimer = Math.max(0, this.sitTimer - 1);
+
+      } else {
+        this.sitTimer = Math.min(20, this.sitTimer + 1);
+      }
     }
 
     super.livingTick();
@@ -193,6 +211,9 @@ public class CamelEntity
 
     if (id == 10) {
       this.eatDrinkTimer = EatGrassDrinkWaterGoal.EAT_DRINK_TIMER_START_VALUE;
+
+    } else if (id == 127) {
+      this.sitTimer = 20;
 
     } else {
       super.handleStatusUpdate(id);

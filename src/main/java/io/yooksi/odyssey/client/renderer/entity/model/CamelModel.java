@@ -46,6 +46,8 @@ public class CamelModel
   private final ModelRenderer hump_back_middle;
   private final ModelRenderer body;
 
+  public float sitScalar;
+
   public CamelModel() {
 
     super();
@@ -220,17 +222,18 @@ public class CamelModel
   }
 
   @Override
-  public void setRotationAngles(@Nonnull CamelEntity camelEntity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
-
-    // Uncomment this for assistance with development
-    //    limbSwing = Minecraft.getInstance().world.getGameTime() * 0.1f;
-    //    limbSwingAmount = 0.5f;
+  public void setLivingAnimations(CamelEntity camelEntity, float limbSwing, float limbSwingAmount, float partialTick) {
 
     // -------------------------------------------------------------------------
     // - Eat / Drink Animation
     // -------------------------------------------------------------------------
 
-    int eatDrinkTimer = camelEntity.getEatDrinkTimer();
+    // Smooth the animation by applying the partial ticks. The eat drink timer
+    // only ever moves in one direction, so we don't need to worry about the
+    // sign of the partial ticks.
+    float eatDrinkTimer = camelEntity.getEatDrinkTimer() - partialTick;
+
+    double degreesToRadians = Math.PI / 180;
 
     if (eatDrinkTimer > 0) {
       this.neck_top.rotateAngleY = 0;
@@ -247,20 +250,84 @@ public class CamelModel
         scalar = (eatDrinkTimer / 10f);
       }
 
-      this.neck_base.rotateAngleX = (float) (15 * (Math.PI / 180)) * scalar;
-      this.neck_top.rotateAngleX = (float) ((90 + 45) * (Math.PI / 180)) * scalar;
-      this.head.rotateAngleX = (float) (-75 * (Math.PI / 180)) * scalar;
+      this.neck_base.rotateAngleX = (float) (15 * degreesToRadians) * scalar;
+      this.neck_top.rotateAngleX = (float) ((90 + 45) * degreesToRadians) * scalar;
+      this.head.rotateAngleX = (float) (-75 * degreesToRadians) * scalar;
 
     } else {
       this.neck_base.rotateAngleX = 0;
       this.neck_top.rotateAngleX = 0;
+    }
 
-      // -----------------------------------------------------------------------
-      // - Look
-      // -----------------------------------------------------------------------
+    // -------------------------------------------------------------------------
+    // - Sit / Stand
+    // -------------------------------------------------------------------------
 
+    if ((camelEntity.isSitting() && camelEntity.getSitTimer() >= 0)
+        || (!camelEntity.isSitting() && camelEntity.getSitTimer() < 20)) {
+
+      // This will smooth the sitting and standing animations by either adding
+      // or subtracting the partial tick depending on the direction of the move.
+      if ((camelEntity.isSitting() && camelEntity.getSitTimer() >= 0)) {
+        this.sitScalar = MathHelper.clamp(1 - (camelEntity.getSitTimer() - partialTick) / 20f, 0, 1);
+
+      } else {
+        this.sitScalar = MathHelper.clamp(1 - (camelEntity.getSitTimer() + partialTick) / 20f, 0, 1);
+      }
+
+      {
+        this.front_leg_right.rotateAngleX = (float) (-Math.PI * 0.5f + (15 * degreesToRadians)) * this.sitScalar;
+        this.front_leg_left.rotateAngleX = (float) (-Math.PI * 0.5f + (15 * degreesToRadians)) * this.sitScalar;
+      }
+      {
+        this.front_leg_right_bottom.rotateAngleX = (float) (Math.PI - (25 * degreesToRadians)) * this.sitScalar;
+        this.front_leg_right_bottom.rotateAngleZ = (float) (3 * degreesToRadians) * this.sitScalar;
+        this.front_leg_left_bottom.rotateAngleX = (float) (Math.PI - (25 * degreesToRadians)) * this.sitScalar;
+        this.front_leg_left_bottom.rotateAngleZ = (float) (-3 * degreesToRadians) * this.sitScalar;
+      }
+      {
+        this.back_leg_right.rotateAngleX = (float) (-Math.PI * 0.5f + (15 * degreesToRadians)) * this.sitScalar;
+        this.back_leg_left.rotateAngleX = (float) (-Math.PI * 0.5f + (15 * degreesToRadians)) * this.sitScalar;
+      }
+      {
+        this.back_leg_right_bottom.rotateAngleX = (float) (Math.PI - (25 * degreesToRadians)) * this.sitScalar;
+        this.back_leg_right_bottom.rotateAngleZ = (float) (3 * degreesToRadians) * this.sitScalar;
+        this.back_leg_left_bottom.rotateAngleX = (float) (Math.PI - (25 * degreesToRadians)) * this.sitScalar;
+        this.back_leg_left_bottom.rotateAngleZ = (float) (-3 * degreesToRadians) * this.sitScalar;
+      }
+
+    } else {
+
+      this.sitScalar = camelEntity.isSitting() ? 1 : 0;
+
+      this.front_leg_right_bottom.rotateAngleZ = 0;
+      this.front_leg_left_bottom.rotateAngleZ = 0;
+      this.back_leg_right_bottom.rotateAngleZ = 0;
+      this.back_leg_left_bottom.rotateAngleZ = 0;
+    }
+  }
+
+  @Override
+  public void setRotationAngles(@Nonnull CamelEntity camelEntity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+
+    // Uncomment this to force a constant walk animation
+    //    limbSwing = Minecraft.getInstance().world.getGameTime() * 0.1f;
+    //    limbSwingAmount = 0.5f;
+
+    // -------------------------------------------------------------------------
+    // - Look
+    // -------------------------------------------------------------------------
+
+    // Don't want to look around when eating.
+    if (camelEntity.getEatDrinkTimer() <= 0) {
       this.head.rotateAngleX = headPitch * ((float) Math.PI / 180F);
       this.neck_top.rotateAngleY = netHeadYaw * ((float) (Math.PI * 0.5) / 180F);
+    }
+
+    // Don't want to play the walking animation while sitting.
+    if ((camelEntity.isSitting() && camelEntity.getSitTimer() >= 0)
+        || (!camelEntity.isSitting() && camelEntity.getSitTimer() < 20)) {
+      return;
     }
 
     // -------------------------------------------------------------------------
@@ -337,6 +404,9 @@ public class CamelModel
       matrixStack.pop();
 
     } else {
+
+      matrixStack.push();
+      matrixStack.translate(0, 0.85 * this.sitScalar, 0);
       this.front_leg_right.render(matrixStack, buffer, packedLight, packedOverlay);
       this.front_leg_left.render(matrixStack, buffer, packedLight, packedOverlay);
       this.back_leg_right.render(matrixStack, buffer, packedLight, packedOverlay);
@@ -345,6 +415,7 @@ public class CamelModel
       this.tail.render(matrixStack, buffer, packedLight, packedOverlay);
       this.hump.render(matrixStack, buffer, packedLight, packedOverlay);
       this.body.render(matrixStack, buffer, packedLight, packedOverlay);
+      matrixStack.pop();
     }
   }
 }
