@@ -96,7 +96,7 @@ public class CamelFollowOwnerGoal
 
       if (!this.camelEntity.getLeashed() && !this.camelEntity.isPassenger()) {
 
-        if (this.camelEntity.getDistanceSq(this.owner) >= 144.0D) {
+        if (this.camelEntity.getDistanceSq(this.owner) >= 32 * 32) {
           this.teleportToOwner();
 
         } else {
