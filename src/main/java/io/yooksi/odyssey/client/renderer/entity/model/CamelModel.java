@@ -1,5 +1,6 @@
 package io.yooksi.odyssey.client.renderer.entity.model;
 
+import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import io.yooksi.odyssey.entity.passive.CamelEntity;
@@ -232,13 +233,29 @@ public class CamelModel
   @Override
   public void render(@Nonnull MatrixStack matrixStack, @Nonnull IVertexBuilder buffer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
 
-    front_leg_right.render(matrixStack, buffer, packedLight, packedOverlay);
-    front_leg_left.render(matrixStack, buffer, packedLight, packedOverlay);
-    back_leg_right.render(matrixStack, buffer, packedLight, packedOverlay);
-    back_leg_left.render(matrixStack, buffer, packedLight, packedOverlay);
-    neck.render(matrixStack, buffer, packedLight, packedOverlay);
-    tail.render(matrixStack, buffer, packedLight, packedOverlay);
-    hump.render(matrixStack, buffer, packedLight, packedOverlay);
-    body.render(matrixStack, buffer, packedLight, packedOverlay);
+    if (this.isChild) {
+      matrixStack.push();
+      matrixStack.scale(0.45454544f, 0.41322312f, 0.45454544f);
+      matrixStack.translate(0, 2.0625, 0);
+      this.front_leg_right.render(matrixStack, buffer, packedLight, packedOverlay);
+      this.front_leg_left.render(matrixStack, buffer, packedLight, packedOverlay);
+      this.back_leg_right.render(matrixStack, buffer, packedLight, packedOverlay);
+      this.back_leg_left.render(matrixStack, buffer, packedLight, packedOverlay);
+      this.neck.render(matrixStack, buffer, packedLight, packedOverlay);
+      this.tail.render(matrixStack, buffer, packedLight, packedOverlay);
+      this.hump.render(matrixStack, buffer, packedLight, packedOverlay);
+      this.body.render(matrixStack, buffer, packedLight, packedOverlay);
+      matrixStack.pop();
+
+    } else {
+      this.front_leg_right.render(matrixStack, buffer, packedLight, packedOverlay);
+      this.front_leg_left.render(matrixStack, buffer, packedLight, packedOverlay);
+      this.back_leg_right.render(matrixStack, buffer, packedLight, packedOverlay);
+      this.back_leg_left.render(matrixStack, buffer, packedLight, packedOverlay);
+      this.neck.render(matrixStack, buffer, packedLight, packedOverlay);
+      this.tail.render(matrixStack, buffer, packedLight, packedOverlay);
+      this.hump.render(matrixStack, buffer, packedLight, packedOverlay);
+      this.body.render(matrixStack, buffer, packedLight, packedOverlay);
+    }
   }
 }
