@@ -69,12 +69,10 @@ public class CamelModel
 
     front_leg_right = new ModelRenderer(this);
     front_leg_right.setRotationPoint(8.725F, 6.125F, -8.5F);
-    setRotationAngle(front_leg_right, 0.7854F, 0.0F, 0.0F);
 
     front_leg_right_top = new ModelRenderer(this);
     front_leg_right_top.setRotationPoint(-4.725F, 0.2048F, -0.1406F);
     front_leg_right.addChild(front_leg_right_top);
-    setRotationAngle(front_leg_right_top, -0.7854F, 0.0F, 0.0F);
     front_leg_right_top.setTextureOffset(66, 26).addBox(-0.375F, -1.3531F, -2.1361F, 5.0F, 9.0F, 4.0F, 0.0F, false);
 
     front_leg_right_bottom = new ModelRenderer(this);
@@ -89,12 +87,10 @@ public class CamelModel
 
     front_leg_left = new ModelRenderer(this);
     front_leg_left.setRotationPoint(-5.0F, 6.125F, -8.5F);
-    setRotationAngle(front_leg_left, 0.7854F, 0.0F, 0.0F);
 
     front_leg_left_top = new ModelRenderer(this);
     front_leg_left_top.setRotationPoint(0.0F, 0.2048F, -0.1406F);
     front_leg_left.addChild(front_leg_left_top);
-    setRotationAngle(front_leg_left_top, -0.7854F, 0.0F, 0.0F);
     front_leg_left_top.setTextureOffset(45, 65).addBox(-0.5F, -1.2781F, -2.0361F, 5.0F, 9.0F, 4.0F, 0.0F, false);
 
     front_leg_left_bottom = new ModelRenderer(this);
