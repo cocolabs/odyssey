@@ -1,16 +1,19 @@
 package io.yooksi.odyssey.entity.passive;
 
 import io.yooksi.odyssey.entity.ModEntityTypes;
+import io.yooksi.odyssey.entity.ai.goal.CamelFollowOwnerGoal;
 import io.yooksi.odyssey.entity.ai.goal.CamelWanderGoal;
 import io.yooksi.odyssey.entity.ai.goal.EatGrassDrinkWaterGoal;
 import net.minecraft.entity.AgeableEntity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.passive.horse.LlamaEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
@@ -25,6 +28,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.UUID;
 
 public class CamelEntity
     extends LlamaEntity {
@@ -54,6 +58,7 @@ public class CamelEntity
   }
 
   private static final DataParameter<Integer> DATA_WHEAT_COUNT = EntityDataManager.createKey(CamelEntity.class, DataSerializers.VARINT);
+  private static final DataParameter<Boolean> DATA_SITTING = EntityDataManager.createKey(CamelEntity.class, DataSerializers.BOOLEAN);
 
   private static final int WHEAT_COUNT_REQUIRED_TO_TAME = 4;
 
@@ -74,6 +79,7 @@ public class CamelEntity
 
     super.registerData();
     this.dataManager.register(DATA_WHEAT_COUNT, 0);
+    this.dataManager.register(DATA_SITTING, false);
   }
 
   private void setWheatCount(int count) {
@@ -100,6 +106,16 @@ public class CamelEntity
     } catch (IllegalArgumentException e) {
       return null;
     }
+  }
+
+  public boolean isSitting() {
+
+    return this.dataManager.get(DATA_SITTING);
+  }
+
+  public void setSitting(boolean sitting) {
+
+    this.dataManager.set(DATA_SITTING, sitting);
   }
 
   // ---------------------------------------------------------------------------
@@ -135,6 +151,7 @@ public class CamelEntity
     this.eatDrinkGoal = new EatGrassDrinkWaterGoal(this, 0.7);
     this.goalSelector.addGoal(5, this.eatDrinkGoal);
     this.goalSelector.addGoal(6, new CamelWanderGoal(this, 0.7));
+    this.goalSelector.addGoal(6, new CamelFollowOwnerGoal(this, 1, 10, 2));
   }
 
   // ---------------------------------------------------------------------------
@@ -255,6 +272,7 @@ public class CamelEntity
 
     super.writeAdditional(compound);
     compound.putInt("WheatCount", this.getWheatCount());
+    compound.putBoolean("Sitting", this.isSitting());
   }
 
   @Override
@@ -262,5 +280,6 @@ public class CamelEntity
 
     super.readAdditional(compound);
     this.setWheatCount(compound.getInt("WheatCount"));
+    this.setSitting(compound.getBoolean("Sitting"));
   }
 }
