@@ -39,6 +39,8 @@ public class CamelEntity
 
   public static final String NAME = "camel";
 
+  public static final int SIT_TIMER_START_VALUE = 20;
+
   private static MethodHandle goalSelector$goalsGetter;
 
   static {
@@ -192,7 +194,7 @@ public class CamelEntity
         this.sitTimer = Math.max(0, this.sitTimer - 1);
 
       } else {
-        this.sitTimer = Math.min(20, this.sitTimer + 1);
+        this.sitTimer = Math.min(SIT_TIMER_START_VALUE, this.sitTimer + 1);
       }
     }
 
@@ -213,7 +215,7 @@ public class CamelEntity
       this.eatDrinkTimer = EatGrassDrinkWaterGoal.EAT_DRINK_TIMER_START_VALUE;
 
     } else if (id == 127) {
-      this.sitTimer = 20;
+      this.sitTimer = SIT_TIMER_START_VALUE;
 
     } else {
       super.handleStatusUpdate(id);

@@ -11,6 +11,8 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
 
+import static io.yooksi.odyssey.entity.passive.CamelEntity.SIT_TIMER_START_VALUE;
+
 @OnlyIn(Dist.CLIENT)
 public class CamelModel
     extends EntityModel<CamelEntity> {
@@ -264,15 +266,15 @@ public class CamelModel
     // -------------------------------------------------------------------------
 
     if ((camelEntity.isSitting() && camelEntity.getSitTimer() >= 0)
-        || (!camelEntity.isSitting() && camelEntity.getSitTimer() < 20)) {
+        || (!camelEntity.isSitting() && camelEntity.getSitTimer() < SIT_TIMER_START_VALUE)) {
 
       // This will smooth the sitting and standing animations by either adding
       // or subtracting the partial tick depending on the direction of the move.
       if ((camelEntity.isSitting() && camelEntity.getSitTimer() >= 0)) {
-        this.sitScalar = MathHelper.clamp(1 - (camelEntity.getSitTimer() - partialTick) / 20f, 0, 1);
+        this.sitScalar = MathHelper.clamp(1 - (camelEntity.getSitTimer() - partialTick) / (float) SIT_TIMER_START_VALUE, 0, 1);
 
       } else {
-        this.sitScalar = MathHelper.clamp(1 - (camelEntity.getSitTimer() + partialTick) / 20f, 0, 1);
+        this.sitScalar = MathHelper.clamp(1 - (camelEntity.getSitTimer() + partialTick) / (float) SIT_TIMER_START_VALUE, 0, 1);
       }
 
       {
