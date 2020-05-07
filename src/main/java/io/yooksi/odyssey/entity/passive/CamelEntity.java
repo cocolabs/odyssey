@@ -235,4 +235,22 @@ public class CamelEntity
 
     return false;
   }
+
+  // ---------------------------------------------------------------------------
+  // - Serialization
+  // ---------------------------------------------------------------------------
+
+  @Override
+  public void writeAdditional(CompoundNBT compound) {
+
+    super.writeAdditional(compound);
+    compound.putInt("WheatCount", this.getWheatCount());
+  }
+
+  @Override
+  public void readAdditional(CompoundNBT compound) {
+
+    super.readAdditional(compound);
+    this.setWheatCount(compound.getInt("WheatCount"));
+  }
 }
