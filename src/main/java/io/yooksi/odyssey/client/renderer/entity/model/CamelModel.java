@@ -235,13 +235,18 @@ public class CamelModel
 
     if (this.isChild) {
       matrixStack.push();
+      matrixStack.scale(0.6f, 0.5f, 0.6f);
+      matrixStack.translate(0, 1.725, 0.22);
+      this.neck.render(matrixStack, buffer, packedLight, packedOverlay);
+      matrixStack.pop();
+
+      matrixStack.push();
       matrixStack.scale(0.45454544f, 0.41322312f, 0.45454544f);
       matrixStack.translate(0, 2.0625, 0);
       this.front_leg_right.render(matrixStack, buffer, packedLight, packedOverlay);
       this.front_leg_left.render(matrixStack, buffer, packedLight, packedOverlay);
       this.back_leg_right.render(matrixStack, buffer, packedLight, packedOverlay);
       this.back_leg_left.render(matrixStack, buffer, packedLight, packedOverlay);
-      this.neck.render(matrixStack, buffer, packedLight, packedOverlay);
       this.tail.render(matrixStack, buffer, packedLight, packedOverlay);
       this.hump.render(matrixStack, buffer, packedLight, packedOverlay);
       this.body.render(matrixStack, buffer, packedLight, packedOverlay);
