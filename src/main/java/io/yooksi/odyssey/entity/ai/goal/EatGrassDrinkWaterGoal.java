@@ -8,7 +8,6 @@ import net.minecraft.entity.CreatureEntity;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.RandomWalkingGoal;
-import net.minecraft.fluid.IFluidState;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
@@ -188,36 +187,53 @@ public class EatGrassDrinkWaterGoal
       return;
     }
 
-    // Set the entity's look position
+    // Set the entity to look at the targeted block. This should orient the
+    // entity in the direction of the targeted block.
     this.entity.getLookController()
         .setLookPosition(this.targetBlockPos.getX(), this.entity.getPosYEye(), this.targetBlockPos.getZ());
 
+    // This is called to set the action timer on the client's instance
+    // of the entity which is in turn used by the animation.
     this.world.setEntityState(this.entity, (byte) 10);
+
+    // Reduce our action timer.
     this.actionTimer = Math.max(0, this.actionTimer - 1);
 
+    // When the action timer is almost expired, we perform the actual eat / drink.
+    // This is the same as the sheep.
+    //
+    // Note that the MobEntity#eatGrassBonus() method is called when the entity
+    // successfully eats or drinks. This is currently only used by the sheep to
+    // regrow its wool. Override the method in your entity if you want to hook
+    // this and provide some bonuses or logic when the entity eats / drinks.
     if (this.actionTimer == 4) {
-      BlockPos blockPos = this.targetBlockPos;
 
-      if (IS_GRASS.test(this.world.getBlockState(blockPos))) {
+      if (IS_GRASS.test(this.world.getBlockState(this.targetBlockPos))) {
+
+        // If the target block is tall grass, destroy it and call the bonus method.
 
         if (net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.world, this.entity)) {
-          this.world.destroyBlock(blockPos, false);
+          this.world.destroyBlock(this.targetBlockPos, false);
         }
 
         this.entity.eatGrassBonus();
 
-      } else if (this.world.getFluidState(blockPos).isTagged(FluidTags.WATER)) {
+      } else if (this.world.getFluidState(this.targetBlockPos).isTagged(FluidTags.WATER)) {
+
+        // If the target block is water, call the bonus method.
+
         this.entity.eatGrassBonus();
 
       } else {
-        BlockPos blockPosDown = blockPos.down();
+
+        // If the block isn't tall grass, or water, we need to check the block
+        // below the target block to see if it's grassy dirt. If it is, we set
+        // the block to dirt and call the bonus method.
+
+        BlockPos blockPosDown = this.targetBlockPos.down();
         Block blockDown = this.world.getBlockState(blockPosDown).getBlock();
-        IFluidState fluidState = this.world.getFluidState(blockPosDown);
 
-        if (fluidState.isTagged(FluidTags.WATER)) {
-          this.entity.eatGrassBonus();
-
-        } else if (blockDown == Blocks.GRASS_BLOCK) {
+        if (blockDown == Blocks.GRASS_BLOCK) {
 
           if (net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.world, this.entity)) {
             this.world.playEvent(2001, blockPosDown, Block.getStateId(Blocks.GRASS_BLOCK.getDefaultState()));
