@@ -208,7 +208,7 @@ public class EatGrassDrinkWaterGoal
     // successfully eats or drinks. This is currently only used by the sheep to
     // regrow its wool. Override the method in your entity if you want to hook
     // this and provide some bonuses or logic when the entity eats / drinks.
-    if (this.actionTimer == 4) {
+    if (this.actionTimer == 20) {
 
       if (IS_GRASS.test(this.world.getBlockState(this.targetBlockPos))) {
 

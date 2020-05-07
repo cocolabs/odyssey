@@ -3,7 +3,6 @@ package io.yooksi.odyssey.client.renderer.entity.model;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import io.yooksi.odyssey.entity.passive.CamelEntity;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.model.EntityModel;
 import net.minecraft.client.renderer.model.ModelRenderer;
 import net.minecraft.util.math.MathHelper;
@@ -223,8 +222,50 @@ public class CamelModel
   @Override
   public void setRotationAngles(@Nonnull CamelEntity camelEntity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
 
-    this.head.rotateAngleX = headPitch * ((float) Math.PI / 180F);
-    this.neck_top.rotateAngleY = netHeadYaw * ((float) (Math.PI * 0.5) / 180F);
+    // Uncomment this for assistance with development
+    //    limbSwing = Minecraft.getInstance().world.getGameTime() * 0.1f;
+    //    limbSwingAmount = 0.5f;
+
+    // -------------------------------------------------------------------------
+    // - Eat / Drink Animation
+    // -------------------------------------------------------------------------
+
+    int eatDrinkTimer = camelEntity.getEatDrinkTimer();
+
+    if (eatDrinkTimer > 0) {
+      this.neck_top.rotateAngleY = 0;
+
+      float scalar = 1;
+
+      if (eatDrinkTimer > 40) {
+        scalar = 0;
+
+      } else if (eatDrinkTimer > 30) {
+        scalar = 1 - ((eatDrinkTimer - 30) / 10f);
+
+      } else if (eatDrinkTimer <= 10) {
+        scalar = (eatDrinkTimer / 10f);
+      }
+
+      this.neck_base.rotateAngleX = (float) (15 * (Math.PI / 180)) * scalar;
+      this.neck_top.rotateAngleX = (float) ((90 + 45) * (Math.PI / 180)) * scalar;
+      this.head.rotateAngleX = (float) (-75 * (Math.PI / 180)) * scalar;
+
+    } else {
+      this.neck_base.rotateAngleX = 0;
+      this.neck_top.rotateAngleX = 0;
+
+      // -----------------------------------------------------------------------
+      // - Look
+      // -----------------------------------------------------------------------
+
+      this.head.rotateAngleX = headPitch * ((float) Math.PI / 180F);
+      this.neck_top.rotateAngleY = netHeadYaw * ((float) (Math.PI * 0.5) / 180F);
+    }
+
+    // -------------------------------------------------------------------------
+    // - Walking Animation
+    // -------------------------------------------------------------------------
 
     float speed = 0.6662F;
     limbSwingAmount = Math.min(0.75f, limbSwingAmount * 4);
