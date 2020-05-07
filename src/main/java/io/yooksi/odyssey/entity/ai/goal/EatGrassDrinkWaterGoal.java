@@ -194,7 +194,9 @@ public class EatGrassDrinkWaterGoal
 
     // This is called to set the action timer on the client's instance
     // of the entity which is in turn used by the animation.
-    this.world.setEntityState(this.entity, (byte) 10);
+    if (this.actionTimer == EAT_DRINK_TIMER_START_VALUE) {
+      this.world.setEntityState(this.entity, (byte) 10);
+    }
 
     // Reduce our action timer.
     this.actionTimer = Math.max(0, this.actionTimer - 1);
