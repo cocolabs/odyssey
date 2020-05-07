@@ -123,7 +123,7 @@ public class CamelModel
     back_leg_right_foot = new ModelRenderer(this);
     back_leg_right_foot.setRotationPoint(5.0F, 8.5702F, 9.6406F);
     back_leg_right_bottom.addChild(back_leg_right_foot);
-    back_leg_right_foot.setTextureOffset(45, 82).addBox(4.35F, -2.1801F, 6.1588F, 4.0F, 2.0F, 4.0F, 0.0F, false);
+    back_leg_right_foot.setTextureOffset(45, 82).addBox(4.35F, -2.1801F, 5.9838F, 4.0F, 2.0F, 4.0F, 0.0F, false);
 
     back_leg_left = new ModelRenderer(this);
     back_leg_left.setRotationPoint(0.0F, 24.0F, 0.0F);
@@ -141,7 +141,7 @@ public class CamelModel
     back_leg_left_foot = new ModelRenderer(this);
     back_leg_left_foot.setRotationPoint(5.0F, 8.5702F, 9.6406F);
     back_leg_left_bottom.addChild(back_leg_left_foot);
-    back_leg_left_foot.setTextureOffset(45, 82).addBox(-5.65F, -1.6801F, 6.5088F, 4.0F, 2.0F, 4.0F, 0.0F, false);
+    back_leg_left_foot.setTextureOffset(45, 82).addBox(-5.65F, -1.6801F, 6.4338F, 4.0F, 2.0F, 4.0F, 0.0F, false);
 
     neck = new ModelRenderer(this);
     neck.setRotationPoint(0.0F, 24.0F, 0.0F);
@@ -209,7 +209,7 @@ public class CamelModel
     hump_back_middle.setRotationPoint(1.51F, -24.5866F, -1.7901F);
     hump.addChild(hump_back_middle);
     setRotationAngle(hump_back_middle, 0.3883F, 0.0F, 0.0F);
-    hump_back_middle.setTextureOffset(31, 52).addBox(-5.5F, -2.45F, -3.1908F, 11.0F, 5.0F, 6.0F, 0.0F, false);
+    hump_back_middle.setTextureOffset(31, 52).addBox(-5.5F, -2.4501F, -3.6907F, 11.0F, 5.0F, 7.0F, 0.0F, false);
 
     body = new ModelRenderer(this);
     body.setRotationPoint(0.0F, 8.55F, 0.0F);
