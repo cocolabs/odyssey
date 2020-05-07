@@ -54,7 +54,7 @@ public final class ModEntityTypes {
   public static void onRegisterItems(final RegistryEvent.Register<Item> event) {
 
     CAMEL_ENTITY_TYPE = EntityType.Builder.create(CamelEntity::new, EntityClassification.CREATURE)
-        .size(EntityType.LLAMA.getWidth(), EntityType.LLAMA.getHeight())
+        .size(1.2F, 2.3375f)
         .build(new ResourceLocation(Defines.MODID, CamelEntity.NAME).toString());
 
     {
