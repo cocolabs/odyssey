@@ -163,7 +163,7 @@ public class CamelModel
     head.addChild(ears);
 
     ear_left = new ModelRenderer(this);
-    ear_left.setRotationPoint(0.0F, -34.0F, -15.75F);
+    ear_left.setRotationPoint(-0.5F, -35.0F, -14.0F);
     ears.addChild(ear_left);
     setRotationAngle(ear_left, 0.0F, -0.6109F, -0.2618F);
     ear_left.setTextureOffset(0, 47).addBox(-2.8864F, -1.5338F, -0.0915F, 2.0F, 3.0F, 2.0F, 0.0F, false);
