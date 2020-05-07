@@ -1,6 +1,7 @@
 package io.yooksi.odyssey.entity.passive;
 
 import io.yooksi.odyssey.entity.ModEntityTypes;
+import io.yooksi.odyssey.entity.ai.goal.CamelWanderGoal;
 import io.yooksi.odyssey.entity.ai.goal.EatGrassDrinkWaterGoal;
 import net.minecraft.entity.AgeableEntity;
 import net.minecraft.entity.EntityType;
@@ -111,7 +112,8 @@ public class CamelEntity
         Goal goal = prioritizedGoal.getGoal();
 
         if (goal instanceof RunAroundLikeCrazyGoal
-            || goal instanceof LlamaFollowCaravanGoal) {
+            || goal instanceof LlamaFollowCaravanGoal
+            || goal instanceof WaterAvoidingRandomWalkingGoal) {
           it.remove();
         }
       }
@@ -122,6 +124,7 @@ public class CamelEntity
 
     this.eatDrinkGoal = new EatGrassDrinkWaterGoal(this, 0.7);
     this.goalSelector.addGoal(5, this.eatDrinkGoal);
+    this.goalSelector.addGoal(6, new CamelWanderGoal(this, 0.7));
   }
 
   // ---------------------------------------------------------------------------
