@@ -88,8 +88,18 @@ public class CamelEntity
 
   public int getEatDrinkTimer() {
 
-    // TODO: this will tie into the eat / drink animation
     return this.eatDrinkTimer;
+  }
+
+  public LivingEntity getOwner() {
+
+    try {
+      UUID uuid = this.getOwnerUniqueId();
+      return uuid == null ? null : this.world.getPlayerByUuid(uuid);
+
+    } catch (IllegalArgumentException e) {
+      return null;
+    }
   }
 
   // ---------------------------------------------------------------------------
