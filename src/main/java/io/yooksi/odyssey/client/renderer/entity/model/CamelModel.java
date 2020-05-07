@@ -1,11 +1,12 @@
 package io.yooksi.odyssey.client.renderer.entity.model;
 
-import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import io.yooksi.odyssey.entity.passive.CamelEntity;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.model.EntityModel;
 import net.minecraft.client.renderer.model.ModelRenderer;
+import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -224,6 +225,52 @@ public class CamelModel
 
     this.head.rotateAngleX = headPitch * ((float) Math.PI / 180F);
     this.neck_top.rotateAngleY = netHeadYaw * ((float) (Math.PI * 0.5) / 180F);
+
+    float speed = 0.6662F;
+    limbSwingAmount = Math.min(0.75f, limbSwingAmount * 4);
+
+    {
+      float cos = MathHelper.cos(limbSwing * speed + (float) Math.PI);
+      if (cos > 0) {
+        this.front_leg_right.rotateAngleX = cos * 1.4F * limbSwingAmount * 0.5f;
+      } else {
+        this.front_leg_right.rotateAngleX = cos * 1.4F * limbSwingAmount * 0.5f;
+      }
+    }
+
+    {
+      float cos = MathHelper.cos(limbSwing * speed);
+      if (cos > 0) {
+        this.front_leg_left.rotateAngleX = cos * 1.4F * limbSwingAmount * 0.5f;
+      } else {
+        this.front_leg_left.rotateAngleX = cos * 1.4F * limbSwingAmount * 0.5f;
+      }
+    }
+
+    this.front_leg_right_bottom.rotateAngleX = Math.max(0, MathHelper.cos(limbSwing * speed + (float) (Math.PI * 0.5f))) * 1.4F * limbSwingAmount;
+    this.front_leg_left_bottom.rotateAngleX = Math.max(0, MathHelper.cos(limbSwing * speed + (float) Math.PI + (float) (Math.PI * 0.5f))) * 1.4F * limbSwingAmount;
+
+    float back_leg_time_offset = (float) -(Math.PI + Math.PI * 0.75f);
+    {
+      float cos = MathHelper.cos(limbSwing * speed + back_leg_time_offset);
+      if (cos < 0) {
+        this.back_leg_left.rotateAngleX = cos * 1.4F * limbSwingAmount * 0.15f;
+      } else {
+        this.back_leg_left.rotateAngleX = cos * 1.4F * limbSwingAmount * 0.5f;
+      }
+    }
+
+    {
+      float cos = MathHelper.cos(limbSwing * speed + (float) Math.PI + back_leg_time_offset);
+      if (cos < 0) {
+        this.back_leg_right.rotateAngleX = cos * 1.4F * limbSwingAmount * 0.15f;
+      } else {
+        this.back_leg_right.rotateAngleX = cos * 1.4F * limbSwingAmount * 0.5f;
+      }
+    }
+
+    this.back_leg_right_bottom.rotateAngleX = -Math.max(0, MathHelper.sin(limbSwing * speed - (float) Math.PI + back_leg_time_offset)) * 1.4F * limbSwingAmount * 0.5f;
+    this.back_leg_left_bottom.rotateAngleX = -Math.max(0, MathHelper.sin(limbSwing * speed + back_leg_time_offset)) * 1.4F * limbSwingAmount * 0.5f;
   }
 
   @Override
