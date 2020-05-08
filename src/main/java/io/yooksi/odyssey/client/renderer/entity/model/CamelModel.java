@@ -18,6 +18,10 @@ import static io.yooksi.odyssey.entity.passive.CamelEntity.SIT_TIMER_START_VALUE
 public class CamelModel
     extends EntityModel<CamelEntity> {
 
+  private static final float PI = (float) Math.PI;
+  private static final float HALF_PI = (float) (Math.PI * 0.5f);
+  private static final float DEGREES_TO_RADIANS = (float) (Math.PI / 180.0);
+
   private final ModelRenderer front_leg_right;
   private final ModelRenderer front_leg_right_top;
   private final ModelRenderer front_leg_right_bottom;
@@ -323,7 +327,11 @@ public class CamelModel
       limbSwingAmount = 0.12960301f;
     }
 
-    limbSwingAmount *= 0.5f;
+    // Animation period modifier
+    limbSwing *= 0.6662f;
+
+    // Animation amplitude modifier
+    limbSwingAmount = Math.min(0.75f, limbSwingAmount * 2.8f);
 
     // -------------------------------------------------------------------------
     // - Look
@@ -331,8 +339,8 @@ public class CamelModel
 
     // Don't want to look around when eating.
     if (camelEntity.getEatDrinkTimer() <= 0) {
-      this.head.rotateAngleX = headPitch * ((float) Math.PI / 180F);
-      this.neck_top.rotateAngleY = netHeadYaw * ((float) (Math.PI * 0.5) / 180F);
+      this.head.rotateAngleX = headPitch * DEGREES_TO_RADIANS;
+      this.neck_top.rotateAngleY = netHeadYaw * DEGREES_TO_RADIANS * 0.5f;
     }
 
     // Don't want to play the walking animation while sitting.
@@ -345,48 +353,61 @@ public class CamelModel
     // - Walking Animation
     // -------------------------------------------------------------------------
 
-    float speed = 0.6662F;
-    limbSwingAmount = Math.min(0.75f, limbSwingAmount * 4);
-
-    // Don't want to move the neck while eating.
+    // Only move the neck if not eating.
     if (camelEntity.getEatDrinkTimer() <= 0) {
-      float cos = -(MathHelper.cos((limbSwing * speed + (float) Math.PI) * 2 - 1) * 2);
-      this.neck_top.rotateAngleX = cos * 1.4F * limbSwingAmount * 0.0625f * 0.25f;
-      this.head.rotateAngleX = -cos * 1.4F * limbSwingAmount * 0.0625f * 0.25f;
+      float cos = -(MathHelper.cos((limbSwing + PI) * 2 - 1) * 2);
+      this.neck_top.rotateAngleX = cos * limbSwingAmount * 0.015625f;
+      this.head.rotateAngleX = -this.neck_top.rotateAngleX;
     }
 
+    // Front
     {
-      float cos = MathHelper.cos(limbSwing * speed + (float) Math.PI);
-      this.front_leg_right.rotateAngleX = cos * 1.4F * limbSwingAmount * 0.5f;
+      float cos = MathHelper.cos(limbSwing + PI);
+      this.front_leg_right.rotateAngleX = cos * limbSwingAmount * 0.5f;
     }
-
     {
-      float cos = MathHelper.cos(limbSwing * speed);
-      this.front_leg_left.rotateAngleX = cos * 1.4F * limbSwingAmount * 0.5f;
+      float cos = MathHelper.cos(limbSwing);
+      this.front_leg_left.rotateAngleX = cos * limbSwingAmount * 0.5f;
     }
 
-    this.front_leg_right_bottom.rotateAngleX = Math.max(0, MathHelper.cos(limbSwing * speed + (float) (Math.PI * 0.5f))) * 1.4F * limbSwingAmount;
-    this.front_leg_left_bottom.rotateAngleX = Math.max(0, MathHelper.cos(limbSwing * speed + (float) Math.PI + (float) (Math.PI * 0.5f))) * 1.4F * limbSwingAmount;
-
-    float back_leg_time_offset = (float) (Math.PI * 0.25f);//(float) -(Math.PI + Math.PI * 0.75f);
+    // Front bottom
     {
-      float cos = MathHelper.cos(limbSwing * speed + back_leg_time_offset);
-      this.back_leg_left.rotateAngleX = cos * 1.4F * limbSwingAmount * 0.5f;
+      float cos = MathHelper.cos(limbSwing + HALF_PI);
+      this.front_leg_right_bottom.rotateAngleX = Math.max(0, cos) * limbSwingAmount;
     }
-
     {
-      float cos = MathHelper.cos(limbSwing * speed + (float) Math.PI + back_leg_time_offset);
-      this.back_leg_right.rotateAngleX = cos * 1.4F * limbSwingAmount * 0.5f;
+      float cos = MathHelper.cos(limbSwing + PI + HALF_PI);
+      this.front_leg_left_bottom.rotateAngleX = Math.max(0, cos) * limbSwingAmount;
     }
 
-    this.back_leg_right_bottom.rotateAngleX = -Math.max(0, MathHelper.sin(limbSwing * speed - (float) Math.PI + back_leg_time_offset)) * 1.4F * limbSwingAmount * 0.75f;
-    this.back_leg_left_bottom.rotateAngleX = -Math.max(0, MathHelper.sin(limbSwing * speed + back_leg_time_offset)) * 1.4F * limbSwingAmount * 0.75f;
+    // Back
+    float back_leg_time_offset = (float) (Math.PI * 0.25f);
+    {
+      float cos = MathHelper.cos(limbSwing + back_leg_time_offset);
+      this.back_leg_left.rotateAngleX = cos * limbSwingAmount * 0.5f;
+    }
+    {
+      float cos = MathHelper.cos(limbSwing + PI + back_leg_time_offset);
+      this.back_leg_right.rotateAngleX = cos * limbSwingAmount * 0.5f;
+    }
+
+    // Back Bottom
+    {
+      float sin = MathHelper.sin(limbSwing - PI + back_leg_time_offset);
+      this.back_leg_right_bottom.rotateAngleX = -Math.max(0, sin) * limbSwingAmount * 0.75f;
+    }
+    {
+      float sin = MathHelper.sin(limbSwing + back_leg_time_offset);
+      this.back_leg_left_bottom.rotateAngleX = -Math.max(0, sin) * limbSwingAmount * 0.75f;
+    }
   }
 
   @Override
   public void render(@Nonnull MatrixStack matrixStack, @Nonnull IVertexBuilder buffer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
 
     if (this.isChild) {
+
+      // Draw the child with a larger head.
       matrixStack.push();
       matrixStack.scale(0.6f, 0.5f, 0.6f);
       matrixStack.translate(0, 1.725, 0.22);
@@ -406,9 +427,8 @@ public class CamelModel
       matrixStack.pop();
 
     } else {
-
       matrixStack.push();
-      matrixStack.translate(0, 0.85 * this.sitScalar, 0);
+      matrixStack.translate(0, 0.85 * this.sitScalar * this.sitScalar, 0);
       this.front_leg_right.render(matrixStack, buffer, packedLight, packedOverlay);
       this.front_leg_left.render(matrixStack, buffer, packedLight, packedOverlay);
       this.back_leg_right.render(matrixStack, buffer, packedLight, packedOverlay);
