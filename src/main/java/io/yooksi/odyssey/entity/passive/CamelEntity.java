@@ -267,7 +267,7 @@ public class CamelEntity
   public boolean processInteract(PlayerEntity player, @Nonnull Hand hand) {
 
     ItemStack itemstack = player.getHeldItem(hand);
-    boolean isAdult = (this.getGrowingAge() == 0);
+    boolean isAdult = (this.getGrowingAge() >= 0);
 
     if (this.isBreedingItem(itemstack)) {
 
@@ -310,7 +310,7 @@ public class CamelEntity
         return true;
       }
 
-    } else if (isAdult && this.isOwner(player) && this.isTame() && hand == Hand.MAIN_HAND) {
+    } else if (!this.world.isRemote && isAdult && this.isOwner(player) && this.isTame() && hand == Hand.MAIN_HAND) {
 
       // If an adult camel's owner clicks on it with a non-wheat item,
       // toggle the sitting status.
