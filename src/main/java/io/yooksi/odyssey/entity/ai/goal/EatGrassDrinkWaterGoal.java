@@ -21,11 +21,18 @@ import java.util.function.Predicate;
 public class EatGrassDrinkWaterGoal
     extends RandomWalkingGoal {
 
+  /**
+   * Start value for the eat / drink timer which is used to sync the goal with
+   * the animation.
+   */
   public static final int EAT_DRINK_TIMER_START_VALUE = 60;
 
   private static final Predicate<BlockState> IS_GRASS = BlockStateMatcher.forBlock(Blocks.GRASS);
   private static final Predicate<BlockState> IS_GRASS_BLOCK = BlockStateMatcher.forBlock(Blocks.GRASS_BLOCK);
 
+  /**
+   * How many times to search for a nearby eat / drink block.
+   */
   private static final int BLOCK_SEARCH_COUNT = 10;
 
   private MobEntity entity;
@@ -56,7 +63,7 @@ public class EatGrassDrinkWaterGoal
     // Loop until a valid position is found or the max tries are exceeded:
     //
     // If the block can be eaten or the block below can be eaten:
-    //   1. Select a pathable position that is a grass, or above a grass block or water source
+    //   1. Select a pathable position that is a grass, or above a grass block
     //   2. Locate a pathable position one block adjacent to the selected position that also has a solid block below it
     //   3. Store the position of the block to path to
     //   4. Store the position of the block to eat
@@ -110,6 +117,12 @@ public class EatGrassDrinkWaterGoal
     return false;
   }
 
+  /**
+   * Checks adjacent and down of the given position for fluids tagged WATER.
+   *
+   * @param blockPos middle pos
+   * @return the pos directly above water if found, else null
+   */
   @Nullable
   private BlockPos getBlockPosToDrink(BlockPos blockPos) {
 
@@ -125,6 +138,10 @@ public class EatGrassDrinkWaterGoal
     return null;
   }
 
+  /**
+   * @param blockPos middle pos
+   * @return a pos that an entity can stand on that is adjacent to the given pos
+   */
   @Nullable
   private BlockPos getAdjacentPos(BlockPos blockPos) {
 
@@ -140,6 +157,10 @@ public class EatGrassDrinkWaterGoal
     return null;
   }
 
+  /**
+   * @param blockPos pos to test
+   * @return true if the block is grass or the block below is grassy dirt
+   */
   private boolean isBlockPosValidToEat(BlockPos blockPos) {
 
     BlockState blockState = this.world.getBlockState(blockPos);
@@ -193,7 +214,8 @@ public class EatGrassDrinkWaterGoal
         .setLookPosition(this.targetBlockPos.getX(), this.entity.getPosYEye(), this.targetBlockPos.getZ());
 
     // This is called to set the action timer on the client's instance
-    // of the entity which is in turn used by the animation.
+    // of the entity which is in turn used by the animation. 10 is used by the
+    // sheep to eat, we'll just use the same value.
     if (this.actionTimer == EAT_DRINK_TIMER_START_VALUE) {
       this.world.setEntityState(this.entity, (byte) 10);
     }
