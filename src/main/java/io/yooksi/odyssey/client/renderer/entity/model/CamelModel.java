@@ -319,7 +319,7 @@ public class CamelModel
 
       // Limb swing amount while walking: 0.12960301
       // Limb swing amount while scared: 0.3798597
-      // Limb swing amount while running full-speed leashed: 0.99391425
+      // Limb swing amount while running at full-speed while leashed: 0.99391425
       limbSwingAmount = 0.5f;
     }
 

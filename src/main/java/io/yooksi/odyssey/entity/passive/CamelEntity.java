@@ -191,9 +191,8 @@ public class CamelEntity
       this.goalSelector.addGoal(2, this.sitGoal);
       this.goalSelector.addGoal(5, this.eatDrinkGoal);
       this.goalSelector.addGoal(6, new CamelFollowOwnerGoal(this, 1, 10, 2));
+      this.goalSelector.addGoal(6, new CamelWanderGoal(this, 0.7));
     }
-
-    this.goalSelector.addGoal(6, new CamelWanderGoal(this, 0.7));
   }
 
   // ---------------------------------------------------------------------------
