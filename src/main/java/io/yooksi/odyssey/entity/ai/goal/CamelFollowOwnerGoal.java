@@ -12,6 +12,12 @@ import net.minecraft.world.IWorldReader;
 
 import java.util.EnumSet;
 
+/**
+ * This goal will make the camel follow its owner and teleport to it when it
+ * gets out of range, like the wolf.
+ *
+ * @see net.minecraft.entity.ai.goal.FollowOwnerGoal
+ */
 public class CamelFollowOwnerGoal
     extends Goal {
 
@@ -20,17 +26,17 @@ public class CamelFollowOwnerGoal
   private IWorldReader world;
   private double followSpeed;
   private int timeToRecalculatePath;
-  private float minDist;
-  private float maxDist;
+  private float startDist;
+  private float stopDist;
   private float oldWaterCost;
 
-  public CamelFollowOwnerGoal(CamelEntity camelEntity, double followSpeed, float minDist, float maxDist) {
+  public CamelFollowOwnerGoal(CamelEntity camelEntity, double followSpeed, float startDist, float stopDist) {
 
     this.camelEntity = camelEntity;
     this.world = camelEntity.world;
     this.followSpeed = followSpeed;
-    this.minDist = minDist;
-    this.maxDist = maxDist;
+    this.startDist = startDist;
+    this.stopDist = stopDist;
     this.setMutexFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
   }
 
@@ -48,7 +54,7 @@ public class CamelFollowOwnerGoal
     } else if (this.camelEntity.isSitting()) {
       return false;
 
-    } else if (this.camelEntity.getDistanceSq(livingentity) < (double) (this.minDist * this.minDist)) {
+    } else if (this.camelEntity.getDistanceSq(livingentity) < (double) (this.startDist * this.startDist)) {
       return false;
 
     } else {
@@ -67,7 +73,7 @@ public class CamelFollowOwnerGoal
       return false;
 
     } else {
-      return !(this.camelEntity.getDistanceSq(this.owner) <= (double) (this.maxDist * this.maxDist));
+      return !(this.camelEntity.getDistanceSq(this.owner) <= (double) (this.stopDist * this.stopDist));
     }
   }
 
@@ -87,6 +93,7 @@ public class CamelFollowOwnerGoal
     this.camelEntity.setPathPriority(PathNodeType.WATER, this.oldWaterCost);
   }
 
+  @Override
   public void tick() {
 
     this.camelEntity.getLookController().setLookPositionWithEntity(this.owner, 10.0F, (float) this.camelEntity.getVerticalFaceSpeed());
