@@ -47,7 +47,7 @@ public class CamelEntity
    * <p>
    * Useful for adjusting the walk animation.
    */
-  public static final boolean DEBUG_WALK_ANIMATION = true;
+  public static final boolean DEBUG_WALK_ANIMATION = false;
 
   /**
    * This will provide access to the superclass's goals, letting us remove the
