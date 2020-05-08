@@ -49,6 +49,10 @@ public class CamelEntity
    */
   public static final boolean DEBUG_WALK_ANIMATION = true;
 
+  /**
+   * This will provide access to the superclass's goals, letting us remove the
+   * goals we don't want.
+   */
   private static MethodHandle goalSelector$goalsGetter;
 
   static {
@@ -71,7 +75,14 @@ public class CamelEntity
     }
   }
 
+  /**
+   * This stores the value of how much wheat the camel has been fed.
+   */
   private static final DataParameter<Integer> DATA_WHEAT_COUNT = EntityDataManager.createKey(CamelEntity.class, DataSerializers.VARINT);
+
+  /**
+   * This stores whether or not the camel is sitting.
+   */
   private static final DataParameter<Boolean> DATA_SITTING = EntityDataManager.createKey(CamelEntity.class, DataSerializers.BOOLEAN);
 
   private static final int WHEAT_COUNT_REQUIRED_TO_TAME = 4;
@@ -125,9 +136,9 @@ public class CamelEntity
     }
   }
 
-  public boolean isOwner(LivingEntity entityIn) {
+  public boolean isOwner(LivingEntity entity) {
 
-    return (entityIn == this.getOwner());
+    return (entity == this.getOwner());
   }
 
   public boolean isSitting() {
@@ -205,6 +216,8 @@ public class CamelEntity
     if (this.world.isRemote) {
       this.eatDrinkTimer = Math.max(0, this.eatDrinkTimer - 1);
 
+      // Change direction of the sitting timer depending on whether the camel
+      // is sitting down or standing up.
       if (this.isSitting()) {
         this.sitTimer = Math.max(0, this.sitTimer - 1);
 
@@ -230,6 +243,8 @@ public class CamelEntity
       this.eatDrinkTimer = EatGrassDrinkWaterGoal.EAT_DRINK_TIMER_START_VALUE;
 
     } else if (id == 127) {
+      // We're using the id of 127 to start the sit timer on the client because
+      // it seemed like an unused value.
       this.sitTimer = SIT_TIMER_START_VALUE;
 
     } else {
@@ -333,6 +348,7 @@ public class CamelEntity
     } else {
       Entity entity = source.getTrueSource();
 
+      // The sit goal will be null on the client.
       if (this.sitGoal != null) {
         this.sitGoal.setSitting(false);
       }
