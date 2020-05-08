@@ -349,8 +349,8 @@ public class CamelModel
     // Don't want to move the neck while eating.
     if (camelEntity.getEatDrinkTimer() <= 0) {
       float cos = -(MathHelper.cos((limbSwing * speed + (float) Math.PI) * 2 - 1) * 2);
-      this.neck_top.rotateAngleX = cos * 1.4F * limbSwingAmount * 0.0625f;
-      this.head.rotateAngleX = -cos * 1.4F * limbSwingAmount * 0.0625f;
+      this.neck_top.rotateAngleX = cos * 1.4F * limbSwingAmount * 0.0625f * 0.25f;
+      this.head.rotateAngleX = -cos * 1.4F * limbSwingAmount * 0.0625f * 0.25f;
     }
 
     {
