@@ -320,8 +320,10 @@ public class CamelModel
       // Limb swing amount while walking: 0.12960301
       // Limb swing amount while scared: 0.3798597
       // Limb swing amount while running at full-speed while leashed: 0.99391425
-      limbSwingAmount = 0.5f;
+      limbSwingAmount = 0.12960301f;
     }
+
+    limbSwingAmount *= 0.5f;
 
     // -------------------------------------------------------------------------
     // - Look
@@ -355,46 +357,30 @@ public class CamelModel
 
     {
       float cos = MathHelper.cos(limbSwing * speed + (float) Math.PI);
-      if (cos > 0) {
-        this.front_leg_right.rotateAngleX = cos * 1.4F * limbSwingAmount * 0.5f;
-      } else {
-        this.front_leg_right.rotateAngleX = cos * 1.4F * limbSwingAmount * 0.5f;
-      }
+      this.front_leg_right.rotateAngleX = cos * 1.4F * limbSwingAmount * 0.5f;
     }
 
     {
       float cos = MathHelper.cos(limbSwing * speed);
-      if (cos > 0) {
-        this.front_leg_left.rotateAngleX = cos * 1.4F * limbSwingAmount * 0.5f;
-      } else {
-        this.front_leg_left.rotateAngleX = cos * 1.4F * limbSwingAmount * 0.5f;
-      }
+      this.front_leg_left.rotateAngleX = cos * 1.4F * limbSwingAmount * 0.5f;
     }
 
     this.front_leg_right_bottom.rotateAngleX = Math.max(0, MathHelper.cos(limbSwing * speed + (float) (Math.PI * 0.5f))) * 1.4F * limbSwingAmount;
     this.front_leg_left_bottom.rotateAngleX = Math.max(0, MathHelper.cos(limbSwing * speed + (float) Math.PI + (float) (Math.PI * 0.5f))) * 1.4F * limbSwingAmount;
 
-    float back_leg_time_offset = (float) -(Math.PI + Math.PI * 0.75f);
+    float back_leg_time_offset = (float) (Math.PI * 0.25f);//(float) -(Math.PI + Math.PI * 0.75f);
     {
       float cos = MathHelper.cos(limbSwing * speed + back_leg_time_offset);
-      if (cos < 0) {
-        this.back_leg_left.rotateAngleX = cos * 1.4F * limbSwingAmount * 0.15f;
-      } else {
-        this.back_leg_left.rotateAngleX = cos * 1.4F * limbSwingAmount * 0.5f;
-      }
+      this.back_leg_left.rotateAngleX = cos * 1.4F * limbSwingAmount * 0.5f;
     }
 
     {
       float cos = MathHelper.cos(limbSwing * speed + (float) Math.PI + back_leg_time_offset);
-      if (cos < 0) {
-        this.back_leg_right.rotateAngleX = cos * 1.4F * limbSwingAmount * 0.15f;
-      } else {
-        this.back_leg_right.rotateAngleX = cos * 1.4F * limbSwingAmount * 0.5f;
-      }
+      this.back_leg_right.rotateAngleX = cos * 1.4F * limbSwingAmount * 0.5f;
     }
 
-    this.back_leg_right_bottom.rotateAngleX = -Math.max(0, MathHelper.sin(limbSwing * speed - (float) Math.PI + back_leg_time_offset)) * 1.4F * limbSwingAmount * 0.5f;
-    this.back_leg_left_bottom.rotateAngleX = -Math.max(0, MathHelper.sin(limbSwing * speed + back_leg_time_offset)) * 1.4F * limbSwingAmount * 0.5f;
+    this.back_leg_right_bottom.rotateAngleX = -Math.max(0, MathHelper.sin(limbSwing * speed - (float) Math.PI + back_leg_time_offset)) * 1.4F * limbSwingAmount * 0.75f;
+    this.back_leg_left_bottom.rotateAngleX = -Math.max(0, MathHelper.sin(limbSwing * speed + back_leg_time_offset)) * 1.4F * limbSwingAmount * 0.75f;
   }
 
   @Override
