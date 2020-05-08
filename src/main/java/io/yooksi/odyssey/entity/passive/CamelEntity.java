@@ -41,6 +41,14 @@ public class CamelEntity
 
   public static final int SIT_TIMER_START_VALUE = 20;
 
+  /**
+   * Setting this to true will remove all of the camel's goals and enable a
+   * constant walk animation in the model.
+   * <p>
+   * Useful for adjusting the walk animation.
+   */
+  public static final boolean DEBUG_WALK_ANIMATION = true;
+
   private static MethodHandle goalSelector$goalsGetter;
 
   static {
@@ -168,16 +176,24 @@ public class CamelEntity
         }
       }
 
+      if (DEBUG_WALK_ANIMATION) {
+        goals.clear();
+      }
+
     } catch (Throwable t) {
       throw new RuntimeException(String.format("Error accessing unreflected field: %s", "field_220892_d"), t);
     }
 
     this.sitGoal = new CamelSitGoal(this);
-    this.goalSelector.addGoal(2, this.sitGoal);
     this.eatDrinkGoal = new EatGrassDrinkWaterGoal(this, 0.7);
-    this.goalSelector.addGoal(5, this.eatDrinkGoal);
+
+    if (!DEBUG_WALK_ANIMATION) {
+      this.goalSelector.addGoal(2, this.sitGoal);
+      this.goalSelector.addGoal(5, this.eatDrinkGoal);
+      this.goalSelector.addGoal(6, new CamelFollowOwnerGoal(this, 1, 10, 2));
+    }
+
     this.goalSelector.addGoal(6, new CamelWanderGoal(this, 0.7));
-    this.goalSelector.addGoal(6, new CamelFollowOwnerGoal(this, 1, 10, 2));
   }
 
   // ---------------------------------------------------------------------------

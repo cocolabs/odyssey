@@ -3,6 +3,7 @@ package io.yooksi.odyssey.client.renderer.entity.model;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import io.yooksi.odyssey.entity.passive.CamelEntity;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.model.EntityModel;
 import net.minecraft.client.renderer.model.ModelRenderer;
 import net.minecraft.util.math.MathHelper;
@@ -312,9 +313,15 @@ public class CamelModel
   @Override
   public void setRotationAngles(@Nonnull CamelEntity camelEntity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
 
-    // Uncomment this to force a constant walk animation
-    //    limbSwing = Minecraft.getInstance().world.getGameTime() * 0.1f;
-    //    limbSwingAmount = 0.5f;
+    // This is used to constantly play the walk animation.
+    if (CamelEntity.DEBUG_WALK_ANIMATION) {
+      limbSwing = Minecraft.getInstance().world.getGameTime() * 0.1f;
+
+      // Limb swing amount while walking: 0.12960301
+      // Limb swing amount while scared: 0.3798597
+      // Limb swing amount while running full-speed leashed: 0.99391425
+      limbSwingAmount = 0.5f;
+    }
 
     // -------------------------------------------------------------------------
     // - Look
