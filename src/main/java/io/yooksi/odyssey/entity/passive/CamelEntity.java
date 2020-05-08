@@ -240,6 +240,7 @@ public class CamelEntity
   public void handleStatusUpdate(byte id) {
 
     if (id == 10) {
+      // 10 is used by the sheep to eat, we'll just use the same value.
       this.eatDrinkTimer = EatGrassDrinkWaterGoal.EAT_DRINK_TIMER_START_VALUE;
 
     } else if (id == 127) {
