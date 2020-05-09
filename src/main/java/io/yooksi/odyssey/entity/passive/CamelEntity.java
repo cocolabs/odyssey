@@ -65,13 +65,13 @@ public class CamelEntity
 		{
 
 			goalSelector$goalsGetter = MethodHandles.lookup().unreflectGetter(
-          /*
-          MC 1.15.1: net/minecraft/entity/ai/goal/GoalSelector.goals
-          Name: d => field_220892_d => goals
-          Comment: None
-          Side: BOTH
-          AT: public net.minecraft.entity.ai.goal.GoalSelector field_220892_d # goals
-           */
+					/*
+					MC 1.15.1: net/minecraft/entity/ai/goal/GoalSelector.goals
+					Name: d => field_220892_d => goals
+					Comment: None
+					Side: BOTH
+					AT: public net.minecraft.entity.ai.goal.GoalSelector field_220892_d # goals
+					*/
 					ObfuscationReflectionHelper.findField(GoalSelector.class, "field_220892_d")
 			);
 		}
