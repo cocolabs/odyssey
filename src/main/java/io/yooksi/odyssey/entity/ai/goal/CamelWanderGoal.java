@@ -4,19 +4,19 @@ import io.yooksi.odyssey.entity.passive.CamelEntity;
 import net.minecraft.entity.ai.goal.WaterAvoidingRandomWalkingGoal;
 
 public class CamelWanderGoal
-    extends WaterAvoidingRandomWalkingGoal {
+		extends WaterAvoidingRandomWalkingGoal {
 
-  private CamelEntity camelEntity;
+	private CamelEntity camelEntity;
 
-  public CamelWanderGoal(CamelEntity camelEntity, double speed) {
+	public CamelWanderGoal(CamelEntity camelEntity, double speed) {
 
-    super(camelEntity, speed);
-    this.camelEntity = camelEntity;
-  }
+		super(camelEntity, speed);
+		this.camelEntity = camelEntity;
+	}
 
-  @Override
-  public boolean shouldExecute() {
+	@Override
+	public boolean shouldExecute() {
 
-    return !this.camelEntity.isTame() && super.shouldExecute();
-  }
+		return !this.camelEntity.isTame() && super.shouldExecute();
+	}
 }

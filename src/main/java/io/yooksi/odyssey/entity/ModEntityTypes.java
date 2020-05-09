@@ -44,26 +44,30 @@ import java.awt.*;
 @Mod.EventBusSubscriber(modid = Defines.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public final class ModEntityTypes {
 
-  private static EntityType<CamelEntity> CAMEL_ENTITY_TYPE;
+	private static EntityType<CamelEntity> CAMEL_ENTITY_TYPE;
 
-  public static final DeferredRegister<EntityType<?>> ENTITY_TYPES = new DeferredRegister<>(ForgeRegistries.ENTITIES, Defines.MODID);
+	public static final DeferredRegister<EntityType<?>> ENTITY_TYPES =
+			new DeferredRegister<>(ForgeRegistries.ENTITIES, Defines.MODID);
 
-  public static final RegistryObject<EntityType<CamelEntity>> CAMEL = ENTITY_TYPES.register(CamelEntity.NAME, () -> CAMEL_ENTITY_TYPE);
+	public static final RegistryObject<EntityType<CamelEntity>> CAMEL =
+			ENTITY_TYPES.register(CamelEntity.NAME, () -> CAMEL_ENTITY_TYPE);
 
-  @SubscribeEvent
-  public static void onRegisterItems(final RegistryEvent.Register<Item> event) {
+	@SubscribeEvent
+	public static void onRegisterItems(final RegistryEvent.Register<Item> event) {
 
-    CAMEL_ENTITY_TYPE = EntityType.Builder.create(CamelEntity::new, EntityClassification.CREATURE)
-        .size(1.2F, 2.3375f)
-        .build(new ResourceLocation(Defines.MODID, CamelEntity.NAME).toString());
+		CAMEL_ENTITY_TYPE = EntityType.Builder.create(CamelEntity::new, EntityClassification.CREATURE)
+				.size(1.2F, 2.3375f)
+				.build(new ResourceLocation(Defines.MODID, CamelEntity.NAME).toString());
 
-    {
-      int primaryColor = new Color(165, 148, 108).getRGB();
-      int secondaryColor = new Color(77, 68, 48).getRGB();
-      event.getRegistry().register(
-          new SpawnEggItem(CAMEL_ENTITY_TYPE, primaryColor, secondaryColor, new Item.Properties().group(ItemGroup.MISC))
-              .setRegistryName(new ResourceLocation(Defines.MODID, CamelEntity.NAME + "_spawn_egg").toString())
-      );
-    }
-  }
+		{
+			int primaryColor = new Color(165, 148, 108).getRGB();
+			int secondaryColor = new Color(77, 68, 48).getRGB();
+			event.getRegistry().register(
+					new SpawnEggItem(CAMEL_ENTITY_TYPE, primaryColor, secondaryColor,
+							new Item.Properties().group(ItemGroup.MISC))
+							.setRegistryName(new ResourceLocation(Defines.MODID, CamelEntity.NAME +
+									"_spawn_egg").toString())
+			);
+		}
+	}
 }

@@ -7,62 +7,68 @@ import net.minecraft.entity.ai.goal.Goal;
 import java.util.EnumSet;
 
 public class CamelSitGoal
-    extends Goal {
+		extends Goal {
 
-  private CamelEntity camelEntity;
-  private boolean sitting;
+	private CamelEntity camelEntity;
+	private boolean sitting;
 
-  public CamelSitGoal(CamelEntity camelEntity) {
+	public CamelSitGoal(CamelEntity camelEntity) {
 
-    this.camelEntity = camelEntity;
-    this.setMutexFlags(EnumSet.of(Goal.Flag.JUMP, Goal.Flag.MOVE));
-  }
+		this.camelEntity = camelEntity;
+		this.setMutexFlags(EnumSet.of(Goal.Flag.JUMP, Goal.Flag.MOVE));
+	}
 
-  @Override
-  public boolean shouldContinueExecuting() {
+	@Override
+	public boolean shouldContinueExecuting() {
 
-    return this.sitting;
-  }
+		return this.sitting;
+	}
 
-  @Override
-  public boolean shouldExecute() {
+	@Override
+	public boolean shouldExecute() {
 
-    if (!this.camelEntity.isTame()) {
-      return false;
+		if (!this.camelEntity.isTame())
+		{
+			return false;
+		}
+		else if (this.camelEntity.isInWaterOrBubbleColumn())
+		{
+			return false;
+		}
+		else if (!this.camelEntity.onGround)
+		{
+			return false;
+		}
+		else
+		{
+			LivingEntity livingentity = this.camelEntity.getOwner();
 
-    } else if (this.camelEntity.isInWaterOrBubbleColumn()) {
-      return false;
+			if (livingentity == null)
+			{
+				return true;
+			}
+			else
+			{
+				return (!(this.camelEntity.getDistanceSq(livingentity) < 144.0D) || livingentity.getRevengeTarget() == null) && this.sitting;
+			}
+		}
+	}
 
-    } else if (!this.camelEntity.onGround) {
-      return false;
+	@Override
+	public void startExecuting() {
 
-    } else {
-      LivingEntity livingentity = this.camelEntity.getOwner();
+		this.camelEntity.getNavigator().clearPath();
+		this.camelEntity.setSitting(true);
+	}
 
-      if (livingentity == null) {
-        return true;
+	@Override
+	public void resetTask() {
 
-      } else {
-        return (!(this.camelEntity.getDistanceSq(livingentity) < 144.0D) || livingentity.getRevengeTarget() == null) && this.sitting;
-      }
-    }
-  }
+		this.camelEntity.setSitting(false);
+	}
 
-  @Override
-  public void startExecuting() {
+	public void setSitting(boolean sitting) {
 
-    this.camelEntity.getNavigator().clearPath();
-    this.camelEntity.setSitting(true);
-  }
-
-  @Override
-  public void resetTask() {
-
-    this.camelEntity.setSitting(false);
-  }
-
-  public void setSitting(boolean sitting) {
-
-    this.sitting = sitting;
-  }
+		this.sitting = sitting;
+	}
 }

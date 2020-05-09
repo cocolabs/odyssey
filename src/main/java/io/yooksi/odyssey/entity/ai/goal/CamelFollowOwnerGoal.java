@@ -19,153 +19,179 @@ import java.util.EnumSet;
  * @see net.minecraft.entity.ai.goal.FollowOwnerGoal
  */
 public class CamelFollowOwnerGoal
-    extends Goal {
+		extends Goal {
 
-  private CamelEntity camelEntity;
-  private LivingEntity owner;
-  private IWorldReader world;
-  private double followSpeed;
-  private int timeToRecalculatePath;
-  private float startDist;
-  private float stopDist;
-  private float oldWaterCost;
+	private CamelEntity camelEntity;
+	private LivingEntity owner;
+	private IWorldReader world;
+	private double followSpeed;
+	private int timeToRecalculatePath;
+	private float startDist;
+	private float stopDist;
+	private float oldWaterCost;
 
-  public CamelFollowOwnerGoal(CamelEntity camelEntity, double followSpeed, float startDist, float stopDist) {
+	public CamelFollowOwnerGoal(CamelEntity camelEntity, double followSpeed, float startDist,
+								float stopDist) {
 
-    this.camelEntity = camelEntity;
-    this.world = camelEntity.world;
-    this.followSpeed = followSpeed;
-    this.startDist = startDist;
-    this.stopDist = stopDist;
-    this.setMutexFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
-  }
+		this.camelEntity = camelEntity;
+		this.world = camelEntity.world;
+		this.followSpeed = followSpeed;
+		this.startDist = startDist;
+		this.stopDist = stopDist;
+		this.setMutexFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
+	}
 
-  @Override
-  public boolean shouldExecute() {
+	@Override
+	public boolean shouldExecute() {
 
-    LivingEntity livingentity = this.camelEntity.getOwner();
+		LivingEntity livingentity = this.camelEntity.getOwner();
 
-    if (livingentity == null) {
-      return false;
+		if (livingentity == null)
+		{
+			return false;
+		}
+		else if (livingentity.isSpectator())
+		{
+			return false;
+		}
+		else if (this.camelEntity.isSitting())
+		{
+			return false;
+		}
+		else if (this.camelEntity.getDistanceSq(livingentity) < (double) (this.startDist * this.startDist))
+		{
+			return false;
+		}
+		else
+		{
+			this.owner = livingentity;
+			return true;
+		}
+	}
 
-    } else if (livingentity.isSpectator()) {
-      return false;
+	@Override
+	public boolean shouldContinueExecuting() {
 
-    } else if (this.camelEntity.isSitting()) {
-      return false;
+		if (this.camelEntity.getNavigator().noPath())
+		{
+			return false;
+		}
+		else if (this.camelEntity.isSitting())
+		{
+			return false;
+		}
+		else
+		{
+			return !(this.camelEntity.getDistanceSq(this.owner) <= (double) (this.stopDist * this.stopDist));
+		}
+	}
 
-    } else if (this.camelEntity.getDistanceSq(livingentity) < (double) (this.startDist * this.startDist)) {
-      return false;
+	@Override
+	public void startExecuting() {
 
-    } else {
-      this.owner = livingentity;
-      return true;
-    }
-  }
+		this.timeToRecalculatePath = 0;
+		this.oldWaterCost = this.camelEntity.getPathPriority(PathNodeType.WATER);
+		this.camelEntity.setPathPriority(PathNodeType.WATER, 0.0F);
+	}
 
-  @Override
-  public boolean shouldContinueExecuting() {
+	@Override
+	public void resetTask() {
 
-    if (this.camelEntity.getNavigator().noPath()) {
-      return false;
+		this.owner = null;
+		this.camelEntity.getNavigator().clearPath();
+		this.camelEntity.setPathPriority(PathNodeType.WATER, this.oldWaterCost);
+	}
 
-    } else if (this.camelEntity.isSitting()) {
-      return false;
+	@Override
+	public void tick() {
 
-    } else {
-      return !(this.camelEntity.getDistanceSq(this.owner) <= (double) (this.stopDist * this.stopDist));
-    }
-  }
+		this.camelEntity.getLookController().setLookPositionWithEntity(this.owner, 10.0F,
+				(float) this.camelEntity.getVerticalFaceSpeed());
 
-  @Override
-  public void startExecuting() {
+		if (--this.timeToRecalculatePath <= 0)
+		{
+			this.timeToRecalculatePath = 10;
 
-    this.timeToRecalculatePath = 0;
-    this.oldWaterCost = this.camelEntity.getPathPriority(PathNodeType.WATER);
-    this.camelEntity.setPathPriority(PathNodeType.WATER, 0.0F);
-  }
+			if (!this.camelEntity.getLeashed() && !this.camelEntity.isPassenger())
+			{
 
-  @Override
-  public void resetTask() {
+				if (this.camelEntity.getDistanceSq(this.owner) >= 32 * 32)
+				{
+					this.teleportToOwner();
+				}
+				else
+				{
+					this.camelEntity.getNavigator().tryMoveToEntityLiving(this.owner, this.followSpeed);
+				}
+			}
+		}
+	}
 
-    this.owner = null;
-    this.camelEntity.getNavigator().clearPath();
-    this.camelEntity.setPathPriority(PathNodeType.WATER, this.oldWaterCost);
-  }
+	private void teleportToOwner() {
 
-  @Override
-  public void tick() {
+		BlockPos blockpos = new BlockPos(this.owner);
 
-    this.camelEntity.getLookController().setLookPositionWithEntity(this.owner, 10.0F, (float) this.camelEntity.getVerticalFaceSpeed());
+		for (int i = 0; i < 10; ++i)
+		{
+			int x = this.randomInt(-3, 3);
+			int y = this.randomInt(-1, 1);
+			int z = this.randomInt(-3, 3);
 
-    if (--this.timeToRecalculatePath <= 0) {
-      this.timeToRecalculatePath = 10;
+			if (!this.teleportTo(blockpos.getX() + x, blockpos.getY() + y, blockpos.getZ() + z))
+			{
+				return;
+			}
+		}
+	}
 
-      if (!this.camelEntity.getLeashed() && !this.camelEntity.isPassenger()) {
+	private boolean teleportTo(int x, int y, int z) {
 
-        if (this.camelEntity.getDistanceSq(this.owner) >= 32 * 32) {
-          this.teleportToOwner();
+		if (Math.abs((double) x - this.owner.getPosX()) < 2.0 && Math.abs((double) z - this.owner.getPosZ()) < 2.0)
+		{
+			return true;
+		}
+		else if (!this.canTeleportToBlock(new BlockPos(x, y, z)))
+		{
+			return true;
+		}
+		else
+		{
+			this.camelEntity.setLocationAndAngles((float) x + 0.5f, y, (float) z + 0.5f,
+					this.camelEntity.rotationYaw, this.camelEntity.rotationPitch);
+			this.camelEntity.getNavigator().clearPath();
+		}
 
-        } else {
-          this.camelEntity.getNavigator().tryMoveToEntityLiving(this.owner, this.followSpeed);
-        }
-      }
-    }
-  }
+		return false;
+	}
 
-  private void teleportToOwner() {
+	private boolean canTeleportToBlock(BlockPos blockPos) {
 
-    BlockPos blockpos = new BlockPos(this.owner);
+		PathNodeType pathnodetype = WalkNodeProcessor.func_227480_b_(this.world, blockPos.getX(),
+				blockPos.getY(), blockPos.getZ());
 
-    for (int i = 0; i < 10; ++i) {
-      int x = this.randomInt(-3, 3);
-      int y = this.randomInt(-1, 1);
-      int z = this.randomInt(-3, 3);
+		if (pathnodetype != PathNodeType.WALKABLE)
+		{
+			return false;
+		}
+		else
+		{
+			BlockState blockstate = this.world.getBlockState(blockPos.down());
 
-      if (!this.teleportTo(blockpos.getX() + x, blockpos.getY() + y, blockpos.getZ() + z)) {
-        return;
-      }
-    }
-  }
+			if (blockstate.getBlock() instanceof LeavesBlock)
+			{
+				return false;
+			}
+			else
+			{
+				BlockPos blockpos = blockPos.subtract(new BlockPos(this.camelEntity));
+				return this.world.hasNoCollisions(this.camelEntity,
+						this.camelEntity.getBoundingBox().offset(blockpos));
+			}
+		}
+	}
 
-  private boolean teleportTo(int x, int y, int z) {
+	private int randomInt(int min, int max) {
 
-    if (Math.abs((double) x - this.owner.getPosX()) < 2.0 && Math.abs((double) z - this.owner.getPosZ()) < 2.0) {
-      return true;
-
-    } else if (!this.canTeleportToBlock(new BlockPos(x, y, z))) {
-      return true;
-
-    } else {
-      this.camelEntity.setLocationAndAngles((float) x + 0.5f, y, (float) z + 0.5f, this.camelEntity.rotationYaw, this.camelEntity.rotationPitch);
-      this.camelEntity.getNavigator().clearPath();
-    }
-
-    return false;
-  }
-
-  private boolean canTeleportToBlock(BlockPos blockPos) {
-
-    PathNodeType pathnodetype = WalkNodeProcessor.func_227480_b_(this.world, blockPos.getX(), blockPos.getY(), blockPos.getZ());
-
-    if (pathnodetype != PathNodeType.WALKABLE) {
-      return false;
-
-    } else {
-      BlockState blockstate = this.world.getBlockState(blockPos.down());
-
-      if (blockstate.getBlock() instanceof LeavesBlock) {
-        return false;
-
-      } else {
-        BlockPos blockpos = blockPos.subtract(new BlockPos(this.camelEntity));
-        return this.world.hasNoCollisions(this.camelEntity, this.camelEntity.getBoundingBox().offset(blockpos));
-      }
-    }
-  }
-
-  private int randomInt(int min, int max) {
-
-    return this.camelEntity.getRNG().nextInt(max - min + 1) + min;
-  }
+		return this.camelEntity.getRNG().nextInt(max - min + 1) + min;
+	}
 }
