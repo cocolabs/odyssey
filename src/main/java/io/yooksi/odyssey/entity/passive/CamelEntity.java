@@ -82,13 +82,13 @@ public class CamelEntity
 	 * This stores the value of how much wheat the camel has been fed.
 	 */
 	private static final DataParameter<Integer> DATA_WHEAT_COUNT =
-            EntityDataManager.createKey(CamelEntity.class, DataSerializers.VARINT);
+			EntityDataManager.createKey(CamelEntity.class, DataSerializers.VARINT);
 
 	/**
 	 * This stores whether or not the camel is sitting.
 	 */
-	private static final DataParameter<Boolean> DATA_SITTING = EntityDataManager.createKey(CamelEntity.class
-            , DataSerializers.BOOLEAN);
+	private static final DataParameter<Boolean> DATA_SITTING =
+			EntityDataManager.createKey(CamelEntity.class, DataSerializers.BOOLEAN);
 
 	private static final int WHEAT_COUNT_REQUIRED_TO_TAME = 4;
 
@@ -184,7 +184,7 @@ public class CamelEntity
 		{
 			//noinspection unchecked
 			Set<PrioritizedGoal> goals =
-                    (Set<PrioritizedGoal>) goalSelector$goalsGetter.invokeExact(this.goalSelector);
+					(Set<PrioritizedGoal>) goalSelector$goalsGetter.invokeExact(this.goalSelector);
 
 			for (Iterator<PrioritizedGoal> it = goals.iterator(); it.hasNext(); )
 			{
@@ -207,7 +207,7 @@ public class CamelEntity
 		catch (Throwable t)
 		{
 			throw new RuntimeException(String.format("Error accessing unreflected field: %s",
-                    "field_220892_d"), t);
+					"field_220892_d"), t);
 		}
 
 		this.sitGoal = new CamelSitGoal(this);
