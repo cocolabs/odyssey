@@ -34,6 +34,9 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.UUID;
 
+/**
+ * @author codetaylor
+ */
 public class CamelEntity
 		extends LlamaEntity {
 

@@ -9,6 +9,9 @@ import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nonnull;
 
+/**
+ * @author codetaylor
+ */
 public class CamelRenderer
 		extends MobRenderer<CamelEntity, CamelModel> {
 

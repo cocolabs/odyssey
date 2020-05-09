@@ -14,6 +14,10 @@ import javax.annotation.Nonnull;
 
 import static io.yooksi.odyssey.entity.passive.CamelEntity.SIT_TIMER_START_VALUE;
 
+/**
+ * @author codetaylor
+ * @author Titus Armillius
+ */
 @OnlyIn(Dist.CLIENT)
 public class CamelModel
 		extends EntityModel<CamelEntity> {

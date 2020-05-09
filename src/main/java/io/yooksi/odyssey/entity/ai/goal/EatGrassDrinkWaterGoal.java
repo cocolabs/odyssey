@@ -18,6 +18,13 @@ import javax.annotation.Nullable;
 import java.util.EnumSet;
 import java.util.function.Predicate;
 
+/**
+ * This goal will periodically move the given {@link CreatureEntity} to a block that it can eat or drink
+ * from, update the server-side action timer, and send a message to the client entity to start its action
+ * timer.
+ *
+ * @author codetaylor
+ */
 public class EatGrassDrinkWaterGoal
 		extends RandomWalkingGoal {
 
@@ -49,6 +56,29 @@ public class EatGrassDrinkWaterGoal
 		this.setMutexFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK, Goal.Flag.JUMP));
 	}
 
+	/**
+	 * <p>Try to locate a grass, grass block, or water for the entity to path to.</p>
+	 * <br>
+	 * <p>The idea is to loop until a valid position is found or the max tries are exceeded using the
+	 * following logic.</p>
+	 * <br>
+	 * <p>If the block can be eaten or the block below can be eaten:</p>
+	 * <ul style="list-style-type:none">
+	 *     <li>1. Select a pathable position that is a grass, or above a grass block</li>
+	 *     <li>2. Locate a pathable position one block adjacent to the selected position that also has a
+	 *     solid
+	 *     block below it</li>
+	 *     <li>3. Store the position of the block to path to</li>
+	 *     <li>4. Store the position of the block to eat</li>
+	 * </ul>
+	 * <p>Else if the block is adjacent to water:</p>
+	 * <ul style="list-style-type:none">
+	 *     <li>5. Store the position of the block to path to</li>
+	 *     <li>6. Store the position of the block to drink</li>
+	 * </ul>
+	 *
+	 * @return true if all the above criteria are met
+	 */
 	public boolean shouldExecute() {
 
 		if (this.entity.getIdleTime() >= 100)
@@ -60,20 +90,6 @@ public class EatGrassDrinkWaterGoal
 		{
 			return false;
 		}
-
-		// Try to locate a grass, grass block, or water for the entity to path to.
-		//
-		// Loop until a valid position is found or the max tries are exceeded:
-		//
-		// If the block can be eaten or the block below can be eaten:
-		//   1. Select a pathable position that is a grass, or above a grass block
-		//   2. Locate a pathable position one block adjacent to the selected position that also has a solid
-		//   block below it
-		//   3. Store the position of the block to path to
-		//   4. Store the position of the block to eat
-		// Else if the block is adjacent to water:
-		//   5. Store the position of the block to path to
-		//   6. Store the position of the block to drink
 
 		for (int i = 0; i < BLOCK_SEARCH_COUNT; i++)
 		{
@@ -87,8 +103,8 @@ public class EatGrassDrinkWaterGoal
 
 			BlockPos blockPos = new BlockPos(posVec);
 
-			if (this.isBlockPosValidToEat(blockPos))
-			{ // 1
+			if (this.isBlockPosValidToEat(blockPos)) // 1
+			{
 				BlockPos adjacentPos = this.getAdjacentPos(blockPos); // 2
 
 				if (adjacentPos == null)

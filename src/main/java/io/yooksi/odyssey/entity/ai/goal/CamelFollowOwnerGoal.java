@@ -16,6 +16,7 @@ import java.util.EnumSet;
  * This goal will make the camel follow its owner and teleport to it when it
  * gets out of range, like the wolf.
  *
+ * @author codetaylor
  * @see net.minecraft.entity.ai.goal.FollowOwnerGoal
  */
 public class CamelFollowOwnerGoal

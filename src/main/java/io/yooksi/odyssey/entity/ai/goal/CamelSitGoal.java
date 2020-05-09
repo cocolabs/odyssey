@@ -6,6 +6,13 @@ import net.minecraft.entity.ai.goal.Goal;
 
 import java.util.EnumSet;
 
+/**
+ * This is based off of the tameable entity sit goal. We can't use vanilla's sit goal because the camel
+ * entity does not extend {@link net.minecraft.entity.passive.TameableEntity}.
+ *
+ * @author codetaylor
+ * @see net.minecraft.entity.ai.goal.SitGoal
+ */
 public class CamelSitGoal
 		extends Goal {
 
