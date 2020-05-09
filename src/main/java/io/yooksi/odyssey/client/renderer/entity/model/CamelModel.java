@@ -93,8 +93,8 @@ public class CamelModel
 		this.front_leg_right_bottom = new ModelRenderer(this);
 		this.front_leg_right_bottom.setRotationPoint(4.0F, 7.1F, 0.0F);
 		this.front_leg_right_top.addChild(this.front_leg_right_bottom);
-		this.front_leg_right_bottom.setTextureOffset(29, 77).addBox(-5.475F, -0.1281F, -1.5361F, 4.0F, 10.0F
-				, 3.0F, 0.0F, false);
+		this.front_leg_right_bottom.setTextureOffset(29, 77).addBox(-5.475F, -0.1281F, -1.5361F, 4.0F,
+				10.0F, 3.0F, 0.0F, false);
 
 		this.front_leg_left_foot = new ModelRenderer(this);
 		this.front_leg_left_foot.setRotationPoint(0.0F, 10.258F, 0.1786F);
@@ -120,8 +120,8 @@ public class CamelModel
 		this.front_leg_right_foot = new ModelRenderer(this);
 		this.front_leg_right_foot.setRotationPoint(0.0F, 10.258F, 0.1786F);
 		this.front_leg_left_bottom.addChild(this.front_leg_right_foot);
-		this.front_leg_right_foot.setTextureOffset(45, 82).addBox(-1.5F, -1.618F, -2.1042F, 4.0F, 2.0F, 4.0F
-				, 0.0F, false);
+		this.front_leg_right_foot.setTextureOffset(45, 82).addBox(-1.5F, -1.618F, -2.1042F, 4.0F, 2.0F,
+				4.0F, 0.0F, false);
 
 		this.back_leg_right = new ModelRenderer(this);
 		this.back_leg_right.setRotationPoint(8.5F, 6.125F, 8.3594F);
@@ -305,11 +305,13 @@ public class CamelModel
 			// or subtracting the partial tick depending on the direction of the move.
 			if ((camelEntity.isSitting() && camelEntity.getSitTimer() >= 0))
 			{
-				this.sitScalar = MathHelper.clamp(1 - (camelEntity.getSitTimer() - partialTick) / (float) SIT_TIMER_START_VALUE, 0, 1);
+				float value = 1 - (camelEntity.getSitTimer() - partialTick) / (float) SIT_TIMER_START_VALUE;
+				this.sitScalar = MathHelper.clamp(value, 0, 1);
 			}
 			else
 			{
-				this.sitScalar = MathHelper.clamp(1 - (camelEntity.getSitTimer() + partialTick) / (float) SIT_TIMER_START_VALUE, 0, 1);
+				float value = 1 - (camelEntity.getSitTimer() + partialTick) / (float) SIT_TIMER_START_VALUE;
+				this.sitScalar = MathHelper.clamp(value, 0, 1);
 			}
 
 			// Front Leg
