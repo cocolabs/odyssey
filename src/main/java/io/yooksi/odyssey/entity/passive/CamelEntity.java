@@ -261,20 +261,21 @@ public class CamelEntity
 	@OnlyIn(Dist.CLIENT)
 	public void handleStatusUpdate(byte id) {
 
-		if (id == 10)
+		switch (id)
 		{
-			// 10 is used by the sheep to eat, we'll just use the same value.
-			this.eatDrinkTimer = EatGrassDrinkWaterGoal.EAT_DRINK_TIMER_START_VALUE;
-		}
-		else if (id == 127)
-		{
-			// We're using the id of 127 to start the sit timer on the client because
-			// it seemed like an unused value.
-			this.sitTimer = SIT_TIMER_START_VALUE;
-		}
-		else
-		{
-			super.handleStatusUpdate(id);
+			case 10:
+				// 10 is used by the sheep to eat, we'll just use the same value.
+				this.eatDrinkTimer = EatGrassDrinkWaterGoal.EAT_DRINK_TIMER_START_VALUE;
+				break;
+
+			case 127:
+				// We're using the id of 127 to start the sit timer on the client because
+				// it seemed like an unused value.
+				this.sitTimer = SIT_TIMER_START_VALUE;
+				break;
+
+			default:
+				super.handleStatusUpdate(id);
 		}
 	}
 
