@@ -2,6 +2,7 @@ package io.yooksi.odyssey.core;
 
 import io.yooksi.odyssey.block.ModBlocks;
 import io.yooksi.odyssey.common.Defines;
+import io.yooksi.odyssey.entity.ModEntityTypes;
 import io.yooksi.odyssey.ODLogger;
 import io.yooksi.odyssey.item.ModItemGroup;
 import io.yooksi.odyssey.item.ModItems;
@@ -48,6 +49,7 @@ public class RegistryHandler {
 
 		ModBlocks.BLOCKS.register(iEventBus);
 		ModItems.ITEMS.register(iEventBus);
+		ModEntityTypes.ENTITY_TYPES.register(iEventBus);
 	}
 
 	/**
